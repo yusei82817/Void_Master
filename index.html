@@ -1,26 +1,84 @@
 <!doctype html>
-<html>
-  <head>
-    <title>
-      Loading...
-    </title>
-    <style>
-      html, body {
-        margin: 0;
-        width: 100%;
-        min-height: 100%;
-        background-color: #000;
-      }
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Void Master - Loading</title>
+  <style>
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background: #000;
+    }
 
-      h2 {
-        color: #fff;
-        text-align: center;
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-family: sans-serif;
+    }
+
+    .loading-panel {
+      box-sizing: border-box;
+      width: min(82vw, 520px);
+      min-height: 112px;
+      padding: 28px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+      border-radius: 14px;
+      text-align: center;
+    }
+
+    #loading-message {
+      margin: 0;
+      font-size: clamp(1rem, 3vw, 1.35rem);
+      font-weight: 600;
+      opacity: 1;
+      transition: opacity 250ms ease;
+    }
+
+    #loading-message.is-changing {
+      opacity: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #loading-message {
+        transition: none;
       }
-    </style>
-  </head>
-  <body>
-    <h2>
-      Now Loading...
-    </h2>
-  </body>
+    }
+  </style>
+</head>
+<body>
+  <main class="loading-panel" aria-live="polite" aria-atomic="true">
+    <h2 id="loading-message">Now Loading...</h2>
+  </main>
+
+  <script>
+    const messages = [
+      "Now Loading...",
+      "Preparing the world...",
+      "Please wait...",
+      "Almost there..."
+    ];
+
+    const messageElement = document.getElementById("loading-message");
+    let messageIndex = 0;
+
+    window.setInterval(() => {
+      messageElement.classList.add("is-changing");
+
+      window.setTimeout(() => {
+        messageIndex = (messageIndex + 1) % messages.length;
+        messageElement.textContent = messages[messageIndex];
+        messageElement.classList.remove("is-changing");
+      }, 250);
+    }, 3000);
+  </script>
+</body>
 </html>
