@@ -70,10 +70,10 @@
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
 
 /* RPG engine interface */
-.scene { min-height: 390px; padding: 18px 10px 38px; }
+.scene { min-height: 390px; padding: 12px 10px 38px; }
 .map-grid {
   display: grid;
-  width: min(96%, 510px);
+  width: min(100%, 570px);
   gap: 3px;
   z-index: 1;
   user-select: none;
@@ -83,8 +83,8 @@
   place-items: center;
   min-width: 0;
   aspect-ratio: 1;
-  border-radius: 4px;
-  font-size: clamp(.7rem, 2.5vw, 1.25rem);
+  border-radius: 3px;
+  font-size: clamp(.55rem, 1.8vw, .95rem);
   line-height: 1;
   background: #b3c9e00b;
   border: 1px solid #ffffff08;
@@ -130,6 +130,7 @@
 @media (max-width: 720px) {
   .scene { min-height: 310px; padding-inline: 4px; }
   .map-grid { gap: 2px; }
+  .map-tile { border-radius: 2px; font-size: clamp(.48rem, 2vw, .75rem); }
   .dpad { padding-inline: 40px; }
 }
 
