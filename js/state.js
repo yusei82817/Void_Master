@@ -4,10 +4,10 @@ export function createInitialState() {
   const enemies = [];
   WORLD.layout.forEach((row, y) => {
     [...row].forEach((cell, x) => {
-      if (cell === 'E') {
+      if (cell === 'E' || cell === 'O') {
         enemies.push({
           id: 'enemy-' + x + '-' + y,
-          templateId: (x === 7 && y === 2) ? 'oniScout' : 'hollowBeast',
+          templateId: cell === 'O' ? 'oniScout' : 'hollowBeast',
           x,
           y,
           defeated: false
@@ -20,7 +20,7 @@ export function createInitialState() {
   const startX = WORLD.layout[startY].indexOf('P');
 
   return {
-    version: 1,
+    version: 2,
     worldId: WORLD.id,
     player: {
       name: '旅人',
@@ -55,7 +55,7 @@ export function createInitialState() {
 
 export function normalizeState(saved) {
   const fresh = createInitialState();
-  if (!saved || saved.version !== 1 || !saved.player || !Array.isArray(saved.inventory)) {
+  if (!saved || saved.version !== 2 || !saved.player || !Array.isArray(saved.inventory)) {
     return fresh;
   }
 
