@@ -65,7 +65,7 @@ export class GameUI {
         let cell = rawCell;
         const enemy = worldSystem.getEnemyAt(state, x, y);
         if (enemy) cell = 'E';
-        else if (rawCell === 'E') cell = '.';
+        else if (rawCell === 'E' || rawCell === 'P') cell = '.';
         if (rawCell === 'R' && state.relicCollected) cell = '.';
         const isPlayer = state.player.x === x && state.player.y === y;
         const info = isPlayer ? TILE_INFO.P : (TILE_INFO[cell] || TILE_INFO['.']);
