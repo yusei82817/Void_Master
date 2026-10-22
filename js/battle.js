@@ -57,7 +57,8 @@ export class BattleSystem {
       player.gold += enemy.gold;
       message += ' ' + enemy.name + 'を倒した。EXP +' + enemy.exp + '、G +' + enemy.gold + '。';
       state.battle = null;
-      this.checkLevelUp(state);
+      const levelMessage = this.checkLevelUp(state);
+      if (levelMessage) message += ' ' + levelMessage;
       return { ok: true, message, status: '探索中' };
     }
 
@@ -82,6 +83,7 @@ export class BattleSystem {
 
   checkLevelUp(state) {
     const player = state.player;
+    const levels = [];
     while (player.exp >= player.nextExp) {
       player.exp -= player.nextExp;
       player.level += 1;
@@ -92,8 +94,9 @@ export class BattleSystem {
       player.defense += 1;
       player.hp = player.maxHp;
       player.mp = player.maxMp;
-      state.message = { name: 'LEVEL UP', text: 'レベルが' + player.level + 'になった。HPとMPが全回復した。', status: '探索中' };
+      levels.push('レベルが' + player.level + 'になった。HPとMPが全回復した。');
     }
+    return levels.join(' ');
   }
 
   roll(min, max) {
