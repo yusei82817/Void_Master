@@ -3,6 +3,7 @@ import { WorldSystem } from './world.js';
 import { BattleSystem } from './battle.js';
 import { SaveSystem } from './save.js';
 import { GameUI } from './ui.js';
+import { useItem } from './inventory.js';
 
 export class GameEngine {
   constructor(documentRef = document) {
@@ -112,8 +113,9 @@ export class GameEngine {
     this.render();
   }
 
-  battleAction(action) {
-    const result = this.battle.act(this.state, action);
+  battleAction(actionSpec) {
+    const [action, itemId] = actionSpec.split(':');
+    const result = this.battle.act(this.state, action, itemId || null);
     if (result.message) {
       this.state.message = {
         name: result.status === '戦闘中' ? 'BATTLE' : 'RESULT',
@@ -138,11 +140,9 @@ export class GameEngine {
       return;
     }
     // Outside battle, item use is a free action.
-    import('./inventory.js').then(({ useItem }) => {
-      const result = useItem(this.state, itemId);
-      this.setMessage(result.ok ? 'ITEM' : 'SYSTEM', result.message);
-      this.ui.showInventory(this.state, false);
-    });
+    const result = useItem(this.state, itemId);
+    this.setMessage(result.ok ? 'ITEM' : 'SYSTEM', result.message);
+    this.ui.showInventory(this.state, false);
   }
 
   saveGame() {
