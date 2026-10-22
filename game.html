@@ -18,10 +18,22 @@
     <main class="layout">
       <section class="panel" aria-label="ゲーム画面">
         <div class="panel-title">FIELD / 現在地</div>
-        <div class="scene" role="img" aria-label="青白い光が浮かぶ、暗い空間">
-          <div class="sigil" aria-hidden="true">◇</div>
+        <div class="scene" id="gameScene" aria-label="探索マップ">
+          <div id="mapGrid" class="map-grid" role="grid" aria-label="フィールドマップ"></div>
           <div class="scene-caption" id="location">未踏の領域</div>
         </div>
+        <section id="battlePanel" class="battle-panel" aria-label="戦闘コマンド" hidden>
+          <div class="battle-heading">
+            <strong id="battleTitle">敵</strong>
+            <span id="battleEnemyHp">HP -- / --</span>
+          </div>
+          <div class="battle-actions">
+            <button class="command" type="button" data-battle-action="attack">攻撃</button>
+            <button class="command" type="button" data-battle-action="ripple">波紋 <small>MP 3</small></button>
+            <button class="command" type="button" data-battle-action="item:potion">回復薬</button>
+            <button class="command" type="button" data-battle-action="flee">逃げる</button>
+          </div>
+        </section>
         <div class="panel-title">MESSAGE / メッセージ</div>
         <div class="message" aria-live="polite" aria-atomic="true">
           <span class="message-name" id="messageName">SYSTEM</span>
@@ -33,11 +45,24 @@
         <section class="panel" aria-label="プレイヤー情報">
           <div class="panel-title">STATUS / 状態</div>
           <div class="status-grid">
-            <div class="stat"><span class="stat-label">NAME</span><span class="stat-value">未設定</span></div>
-            <div class="stat"><span class="stat-label">LEVEL</span><span class="stat-value">--</span></div>
-            <div class="stat"><span class="stat-label">HP</span><span class="stat-value">-- / --</span></div>
-            <div class="stat"><span class="stat-label">MP</span><span class="stat-value">-- / --</span></div>
+            <div class="stat"><span class="stat-label">NAME</span><span class="stat-value" id="statName">旅人</span></div>
+            <div class="stat"><span class="stat-label">LEVEL</span><span class="stat-value" id="statLevel">1</span></div>
+            <div class="stat"><span class="stat-label">HP</span><span class="stat-value" id="statHp">32 / 32</span></div>
+            <div class="stat"><span class="stat-label">MP</span><span class="stat-value" id="statMp">8 / 8</span></div>
+            <div class="stat"><span class="stat-label">EXP</span><span class="stat-value" id="statExp">0 / 20</span></div>
+            <div class="stat"><span class="stat-label">GOLD</span><span class="stat-value" id="statGold">0</span></div>
           </div>
+        </section>
+
+        <section class="panel" aria-label="移動操作">
+          <div class="panel-title">MOVE / 移動</div>
+          <div class="dpad">
+            <span></span><button class="command direction" type="button" data-move="up" aria-label="上へ移動">↑</button><span></span>
+            <button class="command direction" type="button" data-move="left" aria-label="左へ移動">←</button>
+            <button class="command direction" type="button" data-move="down" aria-label="下へ移動">↓</button>
+            <button class="command direction" type="button" data-move="right" aria-label="右へ移動">→</button>
+          </div>
+          <p class="controls-hint">矢印キー / WASD で移動、Eキーで調べる</p>
         </section>
 
         <nav class="panel" aria-label="メインコマンド">
@@ -47,6 +72,7 @@
             <button class="command" type="button" data-command="status"><span>ステータス</span><small>STATUS ›</small></button>
             <button class="command" type="button" data-command="items"><span>持ち物</span><small>ITEMS ›</small></button>
             <button class="command" type="button" data-command="save"><span>セーブ</span><small>SAVE ›</small></button>
+            <button class="command" type="button" data-command="load"><span>ロード</span><small>LOAD ›</small></button>
             <button class="command" type="button" data-command="settings"><span>設定</span><small>OPTIONS ›</small></button>
           </div>
         </nav>
@@ -55,10 +81,18 @@
 
     <footer>
       <span>VOID MASTER · GAME SHELL</span>
-      <span class="notice" id="systemStatus">ゲームシステム未実装 · 画面プロトタイプ</span>
+      <span class="notice" id="systemStatus">ゲームエンジン起動中</span>
     </footer>
   </div>
 
-  <script src="game_script.js" defer></script>
+  <dialog id="menuDialog" class="menu-dialog" aria-labelledby="dialogTitle">
+    <div class="dialog-header">
+      <h2 id="dialogTitle">メニュー</h2>
+      <button id="closeDialog" class="close-dialog" type="button" aria-label="閉じる">×</button>
+    </div>
+    <div id="dialogBody" class="dialog-body"></div>
+  </dialog>
+
+  <script type="module" src="game_script.js"></script>
 </body>
 </html>
