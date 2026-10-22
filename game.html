@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090d18">
+  <title>Void Master | RPG</title>
+  <!-- 開発初期の単一ファイル版。機能が増えたら css/game.css と js/game.js に分離する。 -->
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090d18;
+      --panel: rgba(16, 24, 42, .92);
+      --panel-light: rgba(27, 39, 63, .9);
+      --line: rgba(132, 171, 222, .32);
+      --text: #e8efff;
+      --muted: #94a5c4;
+      --accent: #83c9ff;
+      --gold: #e5cc8b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(39, 80, 137, .25), transparent 55%),
+        linear-gradient(160deg, #10182a 0%, var(--bg) 60%, #080b12 100%);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Noto Sans JP", sans-serif;
+      letter-spacing: .035em;
+    }
+    button { font: inherit; }
+    .shell { width: min(1120px, 100%); margin: 0 auto; padding: 24px; }
+    header {
+      display: flex; justify-content: space-between; align-items: center; gap: 16px;
+      padding: 8px 2px 20px; border-bottom: 1px solid var(--line); margin-bottom: 22px;
+    }
+    .brand { margin: 0; font-size: clamp(1.25rem, 3vw, 1.8rem); font-weight: 600; letter-spacing: .16em; }
+    .brand span { display: block; color: var(--muted); font-size: .65rem; letter-spacing: .28em; margin-top: 5px; }
+    .chapter { color: var(--gold); font-size: .85rem; text-align: right; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(240px, .9fr); gap: 18px; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; box-shadow: 0 16px 44px #0003; }
+    .panel-title { padding: 12px 16px; border-bottom: 1px solid var(--line); background: #ffffff06; color: var(--accent); font-size: .8rem; letter-spacing: .16em; }
+    .scene {
+      min-height: 340px; display: grid; place-items: center; position: relative; overflow: hidden;
+      background:
+        radial-gradient(ellipse at 50% 58%, #25466a55 0%, transparent 44%),
+        linear-gradient(180deg, #101b30 0%, #111827 56%, #080d17 100%);
+    }
+    .scene::before, .scene::after { content: ""; position: absolute; inset: auto; border: 1px solid #83c9ff18; border-radius: 50%; width: 260px; height: 260px; }
+    .scene::after { width: 350px; height: 350px; }
+    .sigil { position: relative; z-index: 1; color: #a4d9ff; font-size: clamp(4rem, 12vw, 7rem); font-weight: 200; text-shadow: 0 0 28px #69baff80; opacity: .85; }
+    .scene-caption { position: absolute; bottom: 16px; left: 18px; right: 18px; text-align: center; color: #9eacc4; font-size: .82rem; }
+    .message { min-height: 130px; padding: 18px 20px; line-height: 1.9; color: #d9e4f8; }
+    .message-name { display: block; margin-bottom: 6px; color: var(--gold); font-size: .82rem; }
+    .side { display: grid; align-content: start; gap: 18px; }
+    .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px; }
+    .stat { padding: 10px; border: 1px solid #ffffff0d; border-radius: 6px; background: #ffffff04; }
+    .stat-label { display: block; color: var(--muted); font-size: .72rem; margin-bottom: 5px; }
+    .stat-value { font-size: .95rem; }
+    .commands { display: grid; gap: 8px; padding: 14px; }
+    .command {
+      width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      text-align: left; padding: 12px 14px; border: 1px solid var(--line); border-radius: 6px;
+      color: var(--text); background: #ffffff05; cursor: pointer; transition: border-color .18s, background .18s, transform .18s;
+    }
+    .command:hover, .command:focus-visible { border-color: var(--accent); background: #83c9ff12; outline: none; }
+    .command:active { transform: translateY(1px); }
+    .command small { color: var(--muted); }
+    footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 18px; color: var(--muted); font-size: .72rem; }
+    .notice { color: var(--gold); }
+    @media (max-width: 720px) {
+      .shell { padding: 14px; }
+      .layout { grid-template-columns: 1fr; }
+      .scene { min-height: 260px; }
+      header { align-items: flex-start; }
+      footer { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <h1 class="brand">VOID MASTER<span>ROLE-PLAYING GAME</span></h1>
+      <div class="chapter">MAIN GAME<br><span style="color:var(--muted)">開発中プロトタイプ</span></div>
+    </header>
+
+    <main class="layout">
+      <section class="panel" aria-label="ゲーム画面">
+        <div class="panel-title">FIELD / 現在地</div>
+        <div class="scene" role="img" aria-label="青白い光が浮かぶ、暗い空間">
+          <div class="sigil" aria-hidden="true">◇</div>
+          <div class="scene-caption" id="location">未踏の領域</div>
+        </div>
+        <div class="panel-title">MESSAGE / メッセージ</div>
+        <div class="message" aria-live="polite" aria-atomic="true">
+          <span class="message-name" id="messageName">SYSTEM</span>
+          <span id="messageText">『Void Master』本編の開発拠点。ここから世界を組み立てていく。</span>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="panel" aria-label="プレイヤー情報">
+          <div class="panel-title">STATUS / 状態</div>
+          <div class="status-grid">
+            <div class="stat"><span class="stat-label">NAME</span><span class="stat-value">未設定</span></div>
+            <div class="stat"><span class="stat-label">LEVEL</span><span class="stat-value">--</span></div>
+            <div class="stat"><span class="stat-label">HP</span><span class="stat-value">-- / --</span></div>
+            <div class="stat"><span class="stat-label">MP</span><span class="stat-value">-- / --</span></div>
+          </div>
+        </section>
+
+        <nav class="panel" aria-label="メインコマンド">
+          <div class="panel-title">COMMAND / コマンド</div>
+          <div class="commands">
+            <button class="command" type="button" data-command="explore"><span>探索</span><small>EXPLORE ›</small></button>
+            <button class="command" type="button" data-command="status"><span>ステータス</span><small>STATUS ›</small></button>
+            <button class="command" type="button" data-command="items"><span>持ち物</span><small>ITEMS ›</small></button>
+            <button class="command" type="button" data-command="save"><span>セーブ</span><small>SAVE ›</small></button>
+            <button class="command" type="button" data-command="settings"><span>設定</span><small>OPTIONS ›</small></button>
+          </div>
+        </nav>
+      </aside>
+    </main>
+
+    <footer>
+      <span>VOID MASTER · GAME SHELL</span>
+      <span class="notice" id="systemStatus">ゲームシステム未実装 · 画面プロトタイプ</span>
+    </footer>
+  </div>
+
+  <script>
+    // 画面確認用の仮コマンド。各システム実装時に個別のJSモジュールへ移す。
+    const messageName = document.getElementById("messageName");
+    const messageText = document.getElementById("messageText");
+    const systemStatus = document.getElementById("systemStatus");
+
+    const commandMessages = {
+      explore: ["EXPLORE", "探索システムはまだ実装されていない。マップとイベントを追加する場所。"],
+      status: ["STATUS", "キャラクターの能力値は、ゲームシステムを設計してから設定する。"],
+      items: ["ITEMS", "アイテム管理は未実装。アイテムデータと所持品管理を後から接続する。"],
+      save: ["SAVE", "セーブ機能は未実装。保存データの形式を決めてから実装する。"],
+      settings: ["OPTIONS", "設定画面は未実装。音量や表示設定などをここに接続する。"]
+    };
+
+    document.querySelectorAll("[data-command]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const result = commandMessages[button.dataset.command];
+        if (!result) return;
+        messageName.textContent = result[0];
+        messageText.textContent = result[1];
+        systemStatus.textContent = "選択中: " + button.querySelector("span").textContent + " · 機能は未実装";
+      });
+    });
+  </script>
+</body>
+</html>
