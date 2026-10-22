@@ -1,10 +1,12 @@
 import { ITEMS, TILE_INFO } from './data.js';
 import { getItem, countItem } from './inventory.js';
+import { CameraSystem } from './camera.js';
 
 export class GameUI {
   constructor(documentRef = document) {
     this.document = documentRef;
     this.mapGrid = documentRef.getElementById('mapGrid');
+    this.camera = new CameraSystem(15, 11);
     this.location = documentRef.getElementById('location');
     this.messageName = documentRef.getElementById('messageName');
     this.messageText = documentRef.getElementById('messageText');
@@ -57,15 +59,20 @@ export class GameUI {
   renderMap(state, worldSystem) {
     if (!this.mapGrid) return;
     const rows = worldSystem.world.layout;
-    this.mapGrid.style.gridTemplateColumns = 'repeat(' + rows[0].length + ', minmax(0, 1fr))';
+    const viewport = this.camera.getViewport(state.player, rows);
+    this.mapGrid.style.gridTemplateColumns = 'repeat(' + viewport.width + ', minmax(0, 1fr))';
+    this.mapGrid.setAttribute('aria-label', 'フィールドマップ。表示範囲 ' +
+      (viewport.x + 1) + '列目から' + (viewport.x + viewport.width) + '列目');
     const fragment = this.document.createDocumentFragment();
 
-    rows.forEach((row, y) => {
-      [...row].forEach((rawCell, x) => {
+    for (let y = viewport.y; y < viewport.y + viewport.height; y += 1) {
+      const row = rows[y] || '';
+      for (let x = viewport.x; x < viewport.x + viewport.width; x += 1) {
+        const rawCell = row[x] || '#';
         let cell = rawCell;
         const enemy = worldSystem.getEnemyAt(state, x, y);
         if (enemy) cell = 'E';
-        else if (rawCell === 'E' || rawCell === 'P') cell = '.';
+        else if (rawCell === 'E' || rawCell === 'O' || rawCell === 'P') cell = '.';
         if (rawCell === 'R' && state.relicCollected) cell = '.';
         const isPlayer = state.player.x === x && state.player.y === y;
         const info = isPlayer ? TILE_INFO.P : (TILE_INFO[cell] || TILE_INFO['.']);
@@ -75,8 +82,8 @@ export class GameUI {
         tile.setAttribute('role', 'gridcell');
         tile.setAttribute('aria-label', isPlayer ? 'プレイヤー' : info.name);
         fragment.appendChild(tile);
-      });
-    });
+      }
+    }
     this.mapGrid.replaceChildren(fragment);
   }
 
