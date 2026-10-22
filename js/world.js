@@ -1,9 +1,11 @@
 import { WORLD, ENEMIES } from './data.js';
 import { addItem } from './inventory.js';
+import { EncounterSystem } from './encounter.js';
 
 export class WorldSystem {
-  constructor() {
+  constructor(encounters = new EncounterSystem()) {
     this.world = WORLD;
+    this.encounters = encounters;
   }
 
   getCell(x, y) {
@@ -16,7 +18,7 @@ export class WorldSystem {
   }
 
   getEnemyAt(state, x, y) {
-    return state.enemies.find((enemy) => !enemy.defeated && enemy.x === x && enemy.y === y) || null;
+    return this.encounters.findEnemyAt(state, x, y);
   }
 
   move(state, dx, dy) {
@@ -42,12 +44,14 @@ export class WorldSystem {
     state.player.x = x;
     state.player.y = y;
     state.steps += 1;
+    const randomEncounter = this.encounters.rollRandomEncounter(state, x, y, cell);
+    if (randomEncounter) return { ok: true, encounter: randomEncounter, randomEncounter: true };
     return { ok: true, message: this.describeCell(state) };
   }
 
   interact(state) {
     if (state.battle) return { ok: false, message: '戦闘中は探索できない。' };
-    const enemy = this.getEnemyAt(state, state.player.x, state.player.y);
+    const enemy = this.encounters.findAdjacentEnemy(state, state.player.x, state.player.y);
     if (enemy) return { ok: true, encounter: enemy };
     if (this.getCell(state.player.x, state.player.y) === 'R' && !state.relicCollected) {
       state.relicCollected = true;
