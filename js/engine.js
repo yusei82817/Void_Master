@@ -6,13 +6,14 @@ import { GameUI } from './ui.js';
 import { useItem } from './inventory.js';
 
 export class GameEngine {
-  constructor(documentRef = document) {
+  constructor(documentRef = document, systems = {}) {
     this.document = documentRef;
-    this.world = new WorldSystem();
-    this.battle = new BattleSystem();
-    this.save = new SaveSystem();
-    this.ui = new GameUI(documentRef);
-    this.state = createInitialState();
+    // game_script.js assembles these modules and passes them into the engine.
+    this.world = systems.world || new WorldSystem();
+    this.battle = systems.battle || new BattleSystem();
+    this.save = systems.save || new SaveSystem();
+    this.ui = systems.ui || new GameUI(documentRef);
+    this.state = systems.state || createInitialState();
     this.boundKeyHandler = (event) => this.handleKey(event);
     this.boundCommandHandler = (event) => this.handleCommand(event);
     this.ui.onBattleAction = (action) => this.battleAction(action);
