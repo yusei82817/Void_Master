@@ -1,19 +1,45 @@
 export const GAME_VERSION = '0.1.0';
 
+function buildFrontierMap() {
+  const width = 41;
+  const height = 31;
+  const grid = Array.from({ length: height }, (_, y) =>
+    Array.from({ length: width }, (_, x) =>
+      x === 0 || y === 0 || x === width - 1 || y === height - 1 ? '#' : '.'
+    )
+  );
+
+  // 壁は通路を残して配置。広いフィールドでも移動経路が途切れないようにする。
+  const verticalWalls = [
+    { x: 8, from: 2, to: 25, gaps: [7, 15, 22] },
+    { x: 17, from: 4, to: 28, gaps: [10, 20] },
+    { x: 27, from: 2, to: 24, gaps: [6, 16, 21] }
+  ];
+  verticalWalls.forEach(({ x, from, to, gaps }) => {
+    for (let y = from; y <= to; y += 1) if (!gaps.includes(y)) grid[y][x] = '#';
+  });
+  const horizontalWalls = [
+    { y: 9, from: 2, to: 14, gaps: [5, 11] },
+    { y: 19, from: 18, to: 38, gaps: [24, 32] }
+  ];
+  horizontalWalls.forEach(({ y, from, to, gaps }) => {
+    for (let x = from; x <= to; x += 1) if (!gaps.includes(x)) grid[y][x] = '#';
+  });
+
+  // 記号: P=開始地点、E=通常敵、O=鬼族、R=核の欠片
+  [[2, 2, 'P'], [10, 5, 'E'], [20, 12, 'O'], [33, 24, 'E'], [36, 27, 'R']].forEach(([x, y, value]) => {
+    grid[y][x] = value;
+  });
+  return grid.map((row) => row.join(''));
+}
+
 export const WORLD = {
   id: 'first-frontier',
   name: '未踏の領域',
-  description: '静かな遺跡。移動して、敵と戦い、核の欠片を見つけよう。',
-  // # = wall, . = floor, P = player start, E = enemy, R = relic
-  layout: [
-    '###########',
-    '#P....#...#',
-    '#.....#E..#',
-    '#.........#',
-    '#.###.##..#',
-    '#..E....R.#',
-    '###########'
-  ]
+  description: '壁の向こうまで続く広大な遺跡。歩きながら周囲を探索しよう。',
+  width: 41,
+  height: 31,
+  layout: buildFrontierMap()
 };
 
 export const ENEMIES = {
