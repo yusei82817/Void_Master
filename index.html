@@ -260,6 +260,94 @@
     .text-button:hover { color: #fff; }
     .text-button:focus-visible { outline: 1px solid var(--blue); outline-offset: 5px; }
 
+    .title-call {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      padding: 24px;
+      background: #020307;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 1.1s ease, visibility 1.1s ease;
+    }
+
+    .title-call::before {
+      position: absolute;
+      inset: -25%;
+      content: "";
+      pointer-events: none;
+      opacity: 0;
+      background: radial-gradient(ellipse at center, rgba(94, 125, 206, 0.25), transparent 35%);
+      transform: scale(0.7);
+      transition: opacity 1.8s ease, transform 2.8s ease;
+    }
+
+    .title-call.is-visible { opacity: 1; visibility: visible; }
+    .title-call.is-visible::before { opacity: 1; transform: scale(1.15); }
+
+    .title-call-content {
+      position: relative;
+      text-align: center;
+      transform: translateY(12px);
+      opacity: 0;
+      transition: opacity 1.4s ease 0.55s, transform 1.4s ease 0.55s;
+    }
+
+    .title-call.is-visible .title-call-content { opacity: 1; transform: translateY(0); }
+
+    .title-call-kicker {
+      margin: 0 0 26px;
+      color: #aabbe9;
+      font-size: 0.66rem;
+      letter-spacing: 0.48em;
+    }
+
+    .title-call-logo {
+      margin: 0;
+      padding-left: 0.2em;
+      color: #f5f6fb;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.2rem, 8vw, 5.4rem);
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-shadow: 0 0 35px rgba(147, 174, 255, 0.28);
+    }
+
+    .title-call-rule {
+      width: min(58vw, 250px);
+      height: 1px;
+      margin: 28px auto 22px;
+      background: linear-gradient(90deg, transparent, rgba(202, 215, 255, 0.85), transparent);
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform 1.2s ease 1s;
+    }
+
+    .title-call.is-visible .title-call-rule { transform: scaleX(1); }
+
+    .title-call-subtitle {
+      margin: 0;
+      color: #b8bfd1;
+      font-size: 0.78rem;
+      letter-spacing: 0.2em;
+    }
+
+    .title-call-continue {
+      display: inline-block;
+      margin-top: 58px;
+      opacity: 0;
+      animation: none;
+    }
+
+    .title-call.is-ready .title-call-continue {
+      animation: appear 900ms ease forwards;
+    }
+
+    @keyframes appear { to { opacity: 1; } }
+
     .end-screen {
       position: absolute;
       inset: 0;
@@ -332,6 +420,16 @@
       </footer>
     </section>
 
+    <section class="title-call" id="title-call" aria-label="タイトルコール" aria-hidden="true">
+      <div class="title-call-content">
+        <p class="title-call-kicker">THE WORLD IS NOT YET LOST</p>
+        <h2 class="title-call-logo">VOID MASTER</h2>
+        <div class="title-call-rule" aria-hidden="true"></div>
+        <p class="title-call-subtitle">闇が濃くなるほど、光は際立つ。</p>
+        <button class="text-button title-call-continue" id="title-continue" type="button">CONTINUE ↗</button>
+      </div>
+    </section>
+
     <section class="end-screen" id="end-screen" aria-hidden="true">
       <div class="end-content">
         <h2>VOID MASTER</h2>
@@ -395,6 +493,8 @@
     const progressLabel = document.getElementById("progress-label");
     const progressValue = document.getElementById("progress-value");
     const skipButton = document.getElementById("skip-button");
+    const titleCall = document.getElementById("title-call");
+    const titleContinue = document.getElementById("title-continue");
     const endScreen = document.getElementById("end-screen");
     const replayButton = document.getElementById("replay-button");
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -404,7 +504,7 @@
     let typingTimer = null;
     let isTyping = false;
     let isEnded = false;
-    let lastTick = 0;
+    let titleTimer = null;
 
     function updateProgress() {
       progressLabel.textContent =
@@ -482,17 +582,35 @@
       stopTyping();
       isTyping = false;
       isEnded = true;
-      progressValue.style.width = "100%";
-      skipButton.textContent = "END";
+      if (titleTimer !== null) window.clearTimeout(titleTimer);
+      opening.classList.remove("is-visible");
+      scene.classList.add("has-light");
+      titleCall.classList.add("is-visible");
+      titleCall.setAttribute("aria-hidden", "false");
+      titleCall.classList.remove("is-ready");
+      titleTimer = window.setTimeout(() => {
+        titleCall.classList.add("is-ready");
+      }, reduceMotion.matches ? 0 : 2200);
+    }
+
+    function leaveTitleCall() {
+      if (!titleCall.classList.contains("is-visible")) return;
+      titleCall.classList.remove("is-visible", "is-ready");
+      titleCall.setAttribute("aria-hidden", "true");
       endScreen.classList.add("is-visible");
       endScreen.setAttribute("aria-hidden", "false");
     }
 
     function startOpening() {
+      stopTyping();
+      if (titleTimer !== null) window.clearTimeout(titleTimer);
       lineIndex = 0;
       isEnded = false;
+      titleCall.classList.remove("is-visible", "is-ready");
+      titleCall.setAttribute("aria-hidden", "true");
       endScreen.classList.remove("is-visible");
       endScreen.setAttribute("aria-hidden", "true");
+      opening.classList.add("is-visible");
       skipButton.textContent = "SKIP ↗";
       scene.classList.remove("has-light");
       showLine(0);
@@ -517,14 +635,23 @@
       skipOpening();
     });
 
+    titleContinue.addEventListener("click", leaveTitleCall);
     replayButton.addEventListener("click", startOpening);
 
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && !isEnded) skipOpening();
       if ((event.key === "Enter" || event.key === " ") &&
+          titleCall.classList.contains("is-visible") &&
+          event.target !== titleContinue) {
+        event.preventDefault();
+        leaveTitleCall();
+        return;
+      }
+      if ((event.key === "Enter" || event.key === " ") &&
           event.target !== storyArea &&
           event.target !== skipButton &&
           event.target !== replayButton &&
+          event.target !== titleContinue &&
           !isEnded) {
         event.preventDefault();
         nextLine();
