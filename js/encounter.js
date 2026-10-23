@@ -7,22 +7,23 @@ export class EncounterSystem {
     this.random = options.random || Math.random;
   }
 
-  findEnemyAt(state, x, y) {
+  findEnemyAt(state, x, y, areaId = state.areaId) {
     return state.enemies.find((enemy) =>
-      !enemy.defeated && enemy.x === x && enemy.y === y
+      !enemy.defeated && enemy.x === x && enemy.y === y && (!enemy.areaId || enemy.areaId === areaId)
     ) || null;
   }
 
-  findAdjacentEnemy(state, x, y) {
+  findAdjacentEnemy(state, x, y, areaId = state.areaId) {
     return [
       [x, y - 1], [x + 1, y], [x, y + 1], [x - 1, y]
-    ].map(([nx, ny]) => this.findEnemyAt(state, nx, ny)).find(Boolean) || null;
+    ].map(([nx, ny]) => this.findEnemyAt(state, nx, ny, areaId)).find(Boolean) || null;
   }
 
   rollRandomEncounter(state, x, y, cell) {
     if (cell !== '.' || state.battle || this.random() >= this.randomRate) return null;
 
-    const templateId = x >= 18 && this.random() < 0.3 ? 'oniScout' : 'hollowBeast';
+    const dangerousAreas = ['cave', 'volcano', 'sea'];
+    const templateId = dangerousAreas.includes(state.areaId) && this.random() < 0.35 ? 'oniScout' : 'hollowBeast';
     return {
       id: 'random-' + state.steps + '-' + x + '-' + y,
       templateId,
