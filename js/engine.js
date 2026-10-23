@@ -117,6 +117,7 @@ export class GameEngine {
     const result = this.world.interact(this.state);
     if (result.encounter) this.battle.start(this.state, result.encounter);
     else this.state.message = { name: result.relic ? 'DISCOVERY' : 'EXPLORE', text: result.message, status: '探索中' };
+    if (result.relic) this.save.saveAuto(this.state);
     this.render();
   }
 
@@ -161,6 +162,10 @@ export class GameEngine {
 
   loadGame() {
     this.ui.showSaveMenu(this.save, 'load');
+  }
+
+  saveStoryCheckpoint(eventId, eventData = {}) {
+    return this.save.saveStory(this.state, eventId, eventData);
   }
 
   performSave(type, slot = 1) {
