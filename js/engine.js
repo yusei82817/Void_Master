@@ -90,6 +90,8 @@ export class GameEngine {
   }
 
   move(dx, dy) {
+    const previousAreaId = this.state.areaId;
+    const previousSteps = this.state.steps;
     const result = this.world.move(this.state, dx, dy);
     if (!result.ok) {
       this.setMessage('FIELD', result.message);
@@ -104,6 +106,10 @@ export class GameEngine {
         status: '探索中'
       };
     }
+    const movedSteps = this.state.steps - previousSteps;
+    if (result.travel || result.relic || (movedSteps > 0 && this.state.steps % 10 === 0) || this.state.areaId !== previousAreaId) {
+      this.save.saveAuto(this.state);
+    }
     this.render();
   }
 
@@ -115,6 +121,7 @@ export class GameEngine {
   }
 
   battleAction(actionSpec) {
+    const wasInBattle = Boolean(this.state.battle);
     const [action, itemId] = actionSpec.split(':');
     const result = this.battle.act(this.state, action, itemId || null);
     if (result.message) {
@@ -132,6 +139,7 @@ export class GameEngine {
       this.state.message.text += ' 近くの安全な場所まで退避した。';
       this.state.message.status = '探索中';
     }
+    if (wasInBattle && !this.state.battle) this.save.saveAuto(this.state);
     this.render();
   }
 
@@ -148,24 +156,51 @@ export class GameEngine {
   }
 
   saveGame() {
-    const result = this.save.save(this.state);
-    this.setMessage(result.ok ? 'SAVE' : 'ERROR', result.message);
+    this.ui.showSaveMenu(this.save, 'save');
   }
 
   loadGame() {
-    const result = this.save.load();
+    this.ui.showSaveMenu(this.save, 'load');
+  }
+
+  performSave(type, slot = 1) {
+    const result = type === 'manual'
+      ? this.save.saveManual(this.state, slot)
+      : type === 'story'
+        ? this.save.saveStory(this.state, 'manual_checkpoint')
+        : this.save.saveAuto(this.state);
+    this.ui.closeDialog();
+    this.setMessage(result.ok ? 'SAVE' : 'ERROR', result.message);
+  }
+
+  performLoad(type, slot = 1) {
+    const result = this.save.load(type, slot);
     if (!result.ok) {
       this.setMessage('LOAD', result.message);
       return;
     }
     this.state = result.state;
     this.world.world = this.world.getWorld(this.state);
-    this.state.message = { name: 'LOAD', text: result.message, status: '探索中' };
+    const eventId = result.record?.extra?.eventId;
+    this.state.message = {
+      name: 'LOAD',
+      text: eventId ? 'ストーリーセーブを読み込んだ。イベントID: ' + eventId : result.message,
+      status: '探索中'
+    };
     this.ui.closeDialog();
     this.render();
   }
 
   dialogAction(action) {
+    const parts = action.split(':');
+    if (parts[0] === 'save') {
+      this.performSave(parts[1], Number(parts[2] || 1));
+      return;
+    }
+    if (parts[0] === 'load') {
+      this.performLoad(parts[1], Number(parts[2] || 1));
+      return;
+    }
     if (action === 'reset') {
       this.state = createInitialState();
       this.world.world = this.world.getWorld(this.state);
