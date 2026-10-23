@@ -99,8 +99,8 @@ export class GameEngine {
       this.battle.start(this.state, result.encounter);
     } else {
       this.state.message = {
-        name: result.relic ? 'DISCOVERY' : 'FIELD',
-        text: result.message || this.world.world.description,
+        name: result.travel ? 'TRAVEL' : (result.relic ? 'DISCOVERY' : 'FIELD'),
+        text: result.message || this.world.getWorld(this.state).description,
         status: '探索中'
       };
     }
@@ -126,9 +126,10 @@ export class GameEngine {
     }
     if (this.state.player.hp <= 0) {
       this.state.player.hp = 1;
-      this.state.player.x = 1;
-      this.state.player.y = 1;
-      this.state.message.text += ' 遺跡の入口まで退避した。';
+      const area = this.world.getWorld(this.state);
+      this.state.player.x = area.start?.x ?? 3;
+      this.state.player.y = area.start?.y ?? 3;
+      this.state.message.text += ' 近くの安全な場所まで退避した。';
       this.state.message.status = '探索中';
     }
     this.render();
@@ -158,6 +159,7 @@ export class GameEngine {
       return;
     }
     this.state = result.state;
+    this.world.world = this.world.getWorld(this.state);
     this.state.message = { name: 'LOAD', text: result.message, status: '探索中' };
     this.ui.closeDialog();
     this.render();
@@ -166,6 +168,7 @@ export class GameEngine {
   dialogAction(action) {
     if (action === 'reset') {
       this.state = createInitialState();
+      this.world.world = this.world.getWorld(this.state);
       this.ui.closeDialog();
       this.setMessage('SYSTEM', '新しい冒険を始めた。');
     }
