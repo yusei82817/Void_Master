@@ -505,6 +505,22 @@
     const replayButton = document.getElementById("replay-button");
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
+    // 「私は……何も知らない。」から先へ進む操作をきっかけにOP曲を再生する。
+    const openingMusic = new Audio("assets/music/屍を越えて_BGMer_OP用.mp3");
+    openingMusic.loop = true;
+    openingMusic.preload = "none";
+    let musicStarted = false;
+
+    function startOpeningMusic() {
+      if (musicStarted) return;
+      musicStarted = true;
+      openingMusic.play().catch((error) => {
+        // 再生に失敗した場合は、コンソールで原因を確認できるようにする。
+        console.error("OP曲を再生できませんでした:", error);
+        musicStarted = false;
+      });
+    }
+
     let lineIndex = 0;
     let characterIndex = 0;
     let typingTimer = null;
@@ -573,6 +589,10 @@
 
     function nextLine() {
       if (isEnded) return;
+
+      // 最初の一文が表示されている間に進行操作をしたときだけ再生を開始。
+      if (lineIndex === 0) startOpeningMusic();
+
       if (isTyping) {
         finishCurrentLine();
         return;
