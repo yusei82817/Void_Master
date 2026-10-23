@@ -52,13 +52,15 @@ export class GameUI {
     this.messageName.textContent = state.message.name || 'SYSTEM';
     this.messageText.textContent = state.message.text || '';
     this.systemStatus.textContent = state.message.status || '探索中';
-    this.location.textContent = worldSystem.world.name;
+    this.location.textContent = worldSystem.getWorld(state).name;
     this.renderBattle(state);
   }
 
   renderMap(state, worldSystem) {
     if (!this.mapGrid) return;
-    const rows = worldSystem.world.layout;
+    const area = worldSystem.getWorld(state);
+    const rows = area.layout;
+    this.mapGrid.dataset.area = area.theme || area.id;
     const viewport = this.camera.getViewport(state.player, rows);
     this.mapGrid.style.gridTemplateColumns = 'repeat(' + viewport.width + ', minmax(0, 1fr))';
     this.mapGrid.setAttribute('aria-label', 'フィールドマップ。表示範囲 ' +
