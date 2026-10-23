@@ -134,3 +134,15 @@
   .dpad { padding-inline: 40px; }
 }
 
+
+/* Six exploration regions */
+.tile-exit { color: #f1d28c; background: #d8a94820; border-color: #d8a94870; font-weight: 700; }
+.map-grid[data-area="village"] .tile-floor { background: #6f9c6530; color: #8fbc83; }
+.map-grid[data-area="forest"] .tile-floor { background: #2f8a5033; color: #5da66f; }
+.map-grid[data-area="sea"] .tile-floor { background: #287db344; color: #68b9e8; }
+.map-grid[data-area="cave"] .tile-floor { background: #8b8f9a20; color: #9ca4b4; }
+.map-grid[data-area="port"] .tile-floor { background: #b5a16b2b; color: #d2bb7a; }
+.map-grid[data-area="volcano"] .tile-floor { background: #b94e382b; color: #ec8265; }
+.map-grid[data-area="sea"] .tile-wall { background: #163b64; border-color: #24598a; }
+.map-grid[data-area="forest"] .tile-wall { background: #193d2c; border-color: #2c6442; }
+.map-grid[data-area="volcano"] .tile-wall { background: #48231f; border-color: #7b342b; }
