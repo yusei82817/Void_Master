@@ -2,6 +2,7 @@ import { normalizeState } from './state.js';
 
 const PREFIX = 'void-master-rpg';
 const MANUAL_SLOTS = 3;
+const LEGACY_SAVE_KEY = 'void-master-rpg-save-v2';
 const STORAGE_KEYS = {
   auto: PREFIX + '-auto-v1',
   story: PREFIX + '-story-v1'
@@ -62,7 +63,8 @@ export class SaveSystem {
     const key = storageKey(type, slot);
     if (!key) return { ok: false, message: '読み込み先が正しくない。' };
     try {
-      const raw = localStorage.getItem(key);
+      let raw = localStorage.getItem(key);
+      if (!raw && type === 'manual' && slot === 1) raw = localStorage.getItem(LEGACY_SAVE_KEY);
       if (!raw) return { ok: false, message: 'セーブデータが見つからない。' };
       const parsed = JSON.parse(raw);
       // Accept the previous single-slot save format for existing players.
@@ -83,7 +85,8 @@ export class SaveSystem {
     const key = storageKey(type, slot);
     if (!key) return null;
     try {
-      const raw = localStorage.getItem(key);
+      let raw = localStorage.getItem(key);
+      if (!raw && type === 'manual' && slot === 1) raw = localStorage.getItem(LEGACY_SAVE_KEY);
       if (!raw) return null;
       const parsed = JSON.parse(raw);
       const state = parsed?.state || parsed;
