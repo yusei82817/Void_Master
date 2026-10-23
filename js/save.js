@@ -1,6 +1,6 @@
 import { normalizeState } from './state.js';
 
-const SAVE_KEY = 'void-master-rpg-save-v1';
+const SAVE_KEY = 'void-master-rpg-save-v2';
 
 export class SaveSystem {
   save(state) {
