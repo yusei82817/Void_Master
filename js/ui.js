@@ -168,6 +168,56 @@ export class GameUI {
     this.dialogBody.replaceChildren(list);
   }
 
+  showSaveMenu(saveSystem, mode = 'save') {
+    const isLoad = mode === 'load';
+    this.openDialog(isLoad ? 'ロード' : 'セーブ', '');
+    const fragment = this.document.createDocumentFragment();
+
+    const addEntry = (type, slot, label, description) => {
+      const info = saveSystem.getInfo(type, slot);
+      const row = this.document.createElement('div');
+      row.className = 'inventory-row';
+      const details = this.document.createElement('div');
+      const name = this.document.createElement('strong');
+      name.textContent = label;
+      const meta = this.document.createElement('p');
+      if (info) {
+        const date = info.savedAt ? new Date(info.savedAt).toLocaleString('ja-JP') : '日時不明';
+        meta.textContent = (info.areaId || '場所不明') + ' / Lv.' + info.level + ' / ' + date;
+      } else {
+        meta.textContent = description || 'データなし';
+      }
+      details.append(name, meta);
+      row.appendChild(details);
+
+      const button = this.document.createElement('button');
+      button.type = 'button';
+      button.className = 'command';
+      button.dataset.dialogAction = (isLoad ? 'load:' : 'save:') + type + (type === 'manual' ? ':' + slot : '');
+      button.textContent = isLoad ? '読み込む' : '保存';
+      button.disabled = isLoad && !info;
+      if (!isLoad && info) button.textContent = '上書き';
+      row.appendChild(button);
+      fragment.appendChild(row);
+    };
+
+    if (isLoad) {
+      addEntry('auto', 1, 'オートセーブ', '探索や戦闘の進行を自動保存');
+      addEntry('story', 1, 'ストーリーセーブ', 'ストーリーイベントの開始地点');
+      for (let slot = 1; slot <= saveSystem.manualSlotCount; slot += 1) {
+        addEntry('manual', slot, '任意セーブ ' + slot, '空きスロット');
+      }
+    } else {
+      const note = this.document.createElement('p');
+      note.textContent = '任意セーブは3枠。オートセーブとストーリーセーブは別々に管理される。';
+      fragment.appendChild(note);
+      for (let slot = 1; slot <= saveSystem.manualSlotCount; slot += 1) {
+        addEntry('manual', slot, '任意セーブ ' + slot, '空きスロット');
+      }
+    }
+    this.dialogBody.replaceChildren(fragment);
+  }
+
   showSettings() {
     this.openDialog('設定', '');
     const note = this.document.createElement('p');
