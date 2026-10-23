@@ -1,15 +1,17 @@
 export const GAME_VERSION = '0.2.0';
-const MAP_WIDTH = 41;
-const MAP_HEIGHT = 31;
+const MAP_WIDTH = 51;
+const MAP_HEIGHT = 37;
 
 function buildAreaMap({ start, exits, enemies = [], relics = [], walls = [] }) {
   const grid = Array.from({ length: MAP_HEIGHT }, (_, y) => Array.from({ length: MAP_WIDTH }, (_, x) =>
     x === 0 || y === 0 || x === MAP_WIDTH - 1 || y === MAP_HEIGHT - 1 ? '#' : '.'));
   const defaultWalls = [
     { x: 12, from: 2, to: 27, gaps: [6, 15, 23] },
-    { x: 24, from: 3, to: 28, gaps: [9, 18, 25] },
+    { x: 24, from: 3, to: 34, gaps: [9, 18, 25, 31] },
+    { x: 36, from: 3, to: 34, gaps: [7, 16, 25, 31] },
     { y: 10, from: 3, to: 37, gaps: [7, 18, 30] },
-    { y: 20, from: 3, to: 37, gaps: [10, 22, 34] }
+    { y: 20, from: 3, to: 47, gaps: [10, 22, 34, 42] },
+    { y: 29, from: 3, to: 47, gaps: [8, 19, 30, 42] }
   ];
   [...defaultWalls, ...walls].forEach((wall) => {
     if (wall.x !== undefined) {
@@ -31,10 +33,10 @@ export const AREAS = {
     description: '旅の拠点となる小さな村。北の道は森へ、南東の道は港へ続く。',
     start: { x: 3, y: 3 },
     exits: {
-      F: { x: 37, y: 5, to: 'forest', spawn: { x: 35, y: 5 }, message: '村を出て、深い森へ足を踏み入れた。' },
-      H: { x: 37, y: 25, to: 'port', spawn: { x: 35, y: 25 }, message: '海風の吹く港へ到着した。' }
+      F: { x: 47, y: 5, to: 'forest', spawn: { x: 35, y: 5 }, message: '村を出て、深い森へ足を踏み入れた。' },
+      H: { x: 47, y: 31, to: 'port', spawn: { x: 35, y: 25 }, message: '海風の吹く港へ到着した。' }
     },
-    layout: buildAreaMap({ start: { x: 3, y: 3 }, exits: { F: { x: 37, y: 5 }, H: { x: 37, y: 25 } }, enemies: [[9, 6, 'E']], walls: [{ x: 6, from: 3, to: 8, gaps: [5] }] })
+    layout: buildAreaMap({ start: { x: 3, y: 3 }, exits: { F: { x: 47, y: 5 }, H: { x: 47, y: 31 } }, enemies: [[9, 6, 'E']], walls: [{ x: 6, from: 3, to: 8, gaps: [5] }] })
   },
   forest: {
     id: 'forest', name: '深緑の森', theme: 'forest',
@@ -42,10 +44,10 @@ export const AREAS = {
     start: { x: 35, y: 5 },
     exits: {
       V: { x: 3, y: 3, to: 'village', spawn: { x: 5, y: 3 }, message: '森を抜け、はじまりの村へ戻った。' },
-      C: { x: 37, y: 5, to: 'cave', spawn: { x: 35, y: 5 }, message: '冷たい風が吹く洞窟へ入った。' },
-      M: { x: 37, y: 25, to: 'volcano', spawn: { x: 35, y: 25 }, message: '山道を越え、火山地帯へ進んだ。' }
+      C: { x: 47, y: 5, to: 'cave', spawn: { x: 35, y: 5 }, message: '冷たい風が吹く洞窟へ入った。' },
+      M: { x: 47, y: 31, to: 'volcano', spawn: { x: 35, y: 25 }, message: '山道を越え、火山地帯へ進んだ。' }
     },
-    layout: buildAreaMap({ exits: { V: { x: 3, y: 3 }, C: { x: 37, y: 5 }, M: { x: 37, y: 25 } }, enemies: [[8, 6, 'E'], [18, 14, 'E'], [30, 23, 'O']], walls: [
+    layout: buildAreaMap({ exits: { V: { x: 3, y: 3 }, C: { x: 47, y: 5 }, M: { x: 47, y: 31 } }, enemies: [[8, 6, 'E'], [18, 14, 'E'], [30, 23, 'O']], walls: [
       { x: 7, from: 2, to: 27, gaps: [8, 17, 24] }, { x: 19, from: 2, to: 27, gaps: [5, 13, 21] }, { y: 15, from: 3, to: 36, gaps: [10, 25] }
     ] })
   },
@@ -55,9 +57,9 @@ export const AREAS = {
     start: { x: 3, y: 3 },
     exits: {
       B: { x: 3, y: 3, to: 'port', spawn: { x: 20, y: 26 }, message: '船を港へ戻した。' },
-      S: { x: 37, y: 25, to: 'volcano', spawn: { x: 35, y: 3 }, message: '火山島の船着き場へ上陸した。' }
+      S: { x: 47, y: 31, to: 'volcano', spawn: { x: 35, y: 3 }, message: '火山島の船着き場へ上陸した。' }
     },
-    layout: buildAreaMap({ exits: { B: { x: 3, y: 3 }, S: { x: 37, y: 25 } }, enemies: [[10, 8, 'E'], [21, 17, 'O'], [32, 8, 'E']], walls: [
+    layout: buildAreaMap({ exits: { B: { x: 3, y: 3 }, S: { x: 47, y: 31 } }, enemies: [[10, 8, 'E'], [21, 17, 'O'], [32, 8, 'E']], walls: [
       { x: 12, from: 2, to: 27, gaps: [6, 15, 23] }, { x: 25, from: 2, to: 27, gaps: [9, 19] }
     ] })
   },
@@ -67,9 +69,9 @@ export const AREAS = {
     start: { x: 35, y: 5 },
     exits: {
       F: { x: 3, y: 3, to: 'forest', spawn: { x: 35, y: 5 }, message: '洞窟を出て深緑の森へ戻った。' },
-      M: { x: 37, y: 25, to: 'volcano', spawn: { x: 5, y: 25 }, message: '溶岩洞を抜け、火山の麓へ出た。' }
+      M: { x: 47, y: 31, to: 'volcano', spawn: { x: 5, y: 25 }, message: '溶岩洞を抜け、火山の麓へ出た。' }
     },
-    layout: buildAreaMap({ exits: { F: { x: 3, y: 3 }, M: { x: 37, y: 25 } }, enemies: [[8, 7, 'E'], [19, 13, 'O'], [31, 23, 'E']], relics: [[32, 26]], walls: [
+    layout: buildAreaMap({ exits: { F: { x: 3, y: 3 }, M: { x: 47, y: 31 } }, enemies: [[8, 7, 'E'], [19, 13, 'O'], [31, 23, 'E']], relics: [[32, 26]], walls: [
       { x: 10, from: 2, to: 27, gaps: [7, 16, 24] }, { x: 21, from: 2, to: 27, gaps: [5, 14, 22] }, { y: 11, from: 3, to: 37, gaps: [8, 18, 29] }
     ] })
   },
@@ -92,9 +94,9 @@ export const AREAS = {
     exits: {
       F: { x: 3, y: 3, to: 'forest', spawn: { x: 35, y: 25 }, message: '山道を下り、深緑の森へ戻った。' },
       C: { x: 3, y: 25, to: 'cave', spawn: { x: 35, y: 25 }, message: '溶岩洞を通り、忘却の洞窟へ入った。' },
-      S: { x: 37, y: 3, to: 'sea', spawn: { x: 35, y: 25 }, message: '船着き場から海へ戻った。' }
+      S: { x: 47, y: 3, to: 'sea', spawn: { x: 35, y: 25 }, message: '船着き場から海へ戻った。' }
     },
-    layout: buildAreaMap({ exits: { F: { x: 3, y: 3 }, C: { x: 3, y: 25 }, S: { x: 37, y: 3 } }, enemies: [[10, 7, 'O'], [22, 13, 'E'], [31, 22, 'O']], relics: [[34, 25]], walls: [
+    layout: buildAreaMap({ exits: { F: { x: 3, y: 3 }, C: { x: 3, y: 25 }, S: { x: 47, y: 3 } }, enemies: [[10, 7, 'O'], [22, 13, 'E'], [31, 22, 'O']], relics: [[34, 25]], walls: [
       { x: 12, from: 2, to: 27, gaps: [7, 16, 24] }, { x: 24, from: 2, to: 27, gaps: [5, 14, 22] }, { y: 18, from: 3, to: 37, gaps: [9, 20, 31] }
     ] })
   }
