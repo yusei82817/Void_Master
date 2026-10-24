@@ -14,6 +14,8 @@ export class GameUI {
     this.battlePanel = documentRef.getElementById('battlePanel');
     this.battleTitle = documentRef.getElementById('battleTitle');
     this.battleEnemyHp = documentRef.getElementById('battleEnemyHp');
+    this.assistantMenuButton = documentRef.getElementById('assistantMenuButton');
+    this.assistantActions = documentRef.getElementById('assistantActions');
     this.playerStats = {
       name: documentRef.getElementById('statName'),
       level: documentRef.getElementById('statLevel'),
@@ -42,7 +44,12 @@ export class GameUI {
     });
     this.battlePanel?.addEventListener('click', (event) => {
       const button = event.target.closest('[data-battle-action]');
-      if (button && this.onBattleAction) this.onBattleAction(button.dataset.battleAction);
+      if (!button) return;
+      if (button.dataset.battleAction === 'assistant-menu') {
+        if (this.assistantActions) this.assistantActions.hidden = !this.assistantActions.hidden;
+        return;
+      }
+      if (this.onBattleAction) this.onBattleAction(button.dataset.battleAction);
     });
   }
 
@@ -102,8 +109,11 @@ export class GameUI {
 
   renderBattle(state) {
     if (!this.battlePanel) return;
+    const assistantUnlocked = Boolean(state.assistantPhase1Unlocked || state.storyEventsCompleted?.includes('S3'));
+    if (this.assistantMenuButton) this.assistantMenuButton.hidden = !assistantUnlocked;
     if (!state.battle) {
       this.battlePanel.hidden = true;
+      if (this.assistantActions) this.assistantActions.hidden = true;
       return;
     }
     this.battlePanel.hidden = false;
