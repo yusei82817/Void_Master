@@ -125,14 +125,22 @@ export class GameEngine {
       this.save.saveAuto(this.state);
     }
     // S1 begins automatically on the first entry into the Deep Green Forest.
+    let storyEventToStart = null;
     if (result.travel && this.state.areaId === 'forest' &&
         !this.state.storyEventsCompleted?.includes('S1')) {
+      storyEventToStart = 'S1';
+    } else if (result.travel && this.state.areaId === 'cave' &&
+        this.state.storyEventsCompleted?.includes('S1') &&
+        !this.state.storyEventsCompleted?.includes('S2')) {
+      storyEventToStart = 'S2';
+    }
+    if (storyEventToStart) {
       try {
         sessionStorage.setItem('voidMasterStoryHandoff', JSON.stringify({ state: this.state }));
       } catch (error) {
         console.error('Story handoff save failed:', error);
       }
-      window.location.href = 'story.html?event=S1';
+      window.location.href = 'story.html?event=' + storyEventToStart;
       return;
     }
     this.render();
