@@ -4,7 +4,7 @@ import { BattleSystem } from './battle.js';
 import { SaveSystem } from './save.js';
 import { GameUI } from './ui.js';
 import { useItem } from './inventory.js';
-import { playSE } from './audio.js';
+import { playSE, playRandomVoice } from './audio.js';
 
 export class GameEngine {
   constructor(documentRef = document, systems = {}) {
@@ -162,7 +162,15 @@ export class GameEngine {
     const wasInBattle = Boolean(this.state.battle);
     const [action, itemId] = actionSpec.split(':');
     const result = this.battle.act(this.state, action, itemId || null);
-    if (result.ok && action === 'attack') playSE('attack');
+    if (result.ok && action === 'attack') {
+      playSE('attack');
+      playRandomVoice('normalAttack');
+    }
+    if (result.ok && action === 'ripple' && !this.state.rippleVoicePlayed) {
+      playSE('rippleFirstUse');
+      this.state.rippleVoicePlayed = true;
+      this.save.saveAuto(this.state);
+    }
     if (result.ok && action === 'item' && itemId === 'ether') playSE('mpRestore');
     if (result.message) {
       this.state.message = {
