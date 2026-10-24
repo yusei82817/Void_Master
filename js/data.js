@@ -106,7 +106,7 @@ export const AREAS = {
     description: '空と水の境界が曖昧な、神秘の入江。水平線の向こうにも、淡い蒼光を帯びた島影と古代の石柱が続いている。遠近感は狂い、歩いても歩いても景色の全貌は見えない。ここは地図に収まる場所ではない。',
     start: { x: 5, y: 40 },
     exits: {
-      V: { x: 3, y: 40, to: 'volcano', spawn: { x: 45, y: 29 }, message: '蒼い光の回廊を抜け、灰燼の火山へ戻った。' }
+      V: { x: 3, y: 40, to: 'volcano', spawn: { x: 45, y: 30 }, message: '蒼い光の回廊を抜け、灰燼の火山へ戻った。' }
     },
     layout: buildAreaMap({
       width: 121, height: 81, defaultWalls: false,
