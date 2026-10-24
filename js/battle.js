@@ -1,5 +1,6 @@
 import { ENEMIES } from './data.js';
 import { useItem } from './inventory.js';
+import { applyAssistantTechnique } from './assistant-combat.js';
 
 export class BattleSystem {
   start(state, enemyRecord) {
@@ -27,6 +28,29 @@ export class BattleSystem {
       }
       const reply = this.enemyTurn(state);
       return { ok: true, message: '逃げ道をふさがれた。' + reply, status: state.battle ? '戦闘中' : '戦闘終了' };
+    }
+
+    if (action === 'assistant') {
+      if (!state.assistantPhase1Unlocked && !state.storyEventsCompleted?.includes('S3')) {
+        return { ok: false, message: 'アシスタントはS3クリア後に使用できる。' };
+      }
+      const techniqueResult = applyAssistantTechnique(state, 'PHASE-1', itemId);
+      if (!techniqueResult.ok) return techniqueResult;
+      let message = techniqueResult.message;
+      if (enemy.hp <= 0 || techniqueResult.enemyDefeated) {
+        const record = state.enemies.find((entry) => entry.id === battle.enemyId);
+        if (record) record.defeated = true;
+        player.exp += enemy.exp;
+        player.gold += enemy.gold;
+        message += ' ' + enemy.name + 'を倒した。EXP +' + enemy.exp + '、G +' + enemy.gold + '。';
+        state.battle = null;
+        const levelMessage = this.checkLevelUp(state);
+        if (levelMessage) message += ' ' + levelMessage;
+        return { ok: true, message, status: '探索中' };
+      }
+      const enemyMessage = this.enemyTurn(state);
+      if (state.battle) battle.turn += 1;
+      return { ok: true, message: message + ' ' + enemyMessage, status: state.battle ? '戦闘中' : '戦闘終了' };
     }
 
     let message = '';
