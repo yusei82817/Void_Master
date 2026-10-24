@@ -180,7 +180,7 @@ export function applyAssistantTechnique(state, phase, techniqueId, options = {})
     case 'liar-macaron': {
       const damage = Math.max(1, Math.floor(enemy.maxHp * 0.02));
       enemy.hp = Math.max(0, enemy.hp - damage);
-      effects.rippleAttackBonusPercent += 2;
+      player.rippleAttackBonusPercent = (player.rippleAttackBonusPercent || 0) + 2;
       return result(true,
         'Liar Macaron！ ' + enemy.name + 'に' + damage +
         'ダメージ。波紋の基礎攻撃力が永続的に2%上昇した。',
@@ -215,7 +215,7 @@ export function checkYararara(state) {
   const player = state.player;
   const effects = getAssistantEffects(battle);
 
-  if (effects.yarararaUsed || player.hp <= 0 || player.hp > player.maxHp * 0.08) {
+  if (effects.yarararaUsed || player.hp > player.maxHp * 0.08) {
     return result(false, '');
   }
 
@@ -299,7 +299,7 @@ export function canRippleHitVoid(state) {
 export function getRippleAttackMultiplier(state) {
   const battle = getBattle(state);
   if (!battle) return 1;
-  return 1 + getAssistantEffects(battle).rippleAttackBonusPercent / 100;
+  return 1 + ((state.player && state.player.rippleAttackBonusPercent) || 0) / 100;
 }
 
 /** Clears one-turn effects at the end of the player's action turn. */
