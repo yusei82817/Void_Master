@@ -12,7 +12,7 @@ export function createInitialState() {
     version: 3, worldId: area.id, areaId: area.id,
     player: { name: '旅人', level: 1, exp: 0, nextExp: 20, hp: 32, maxHp: 32, mp: 8, maxMp: 8, attack: 7, defense: 3, gold: 0, x: area.start.x, y: area.start.y },
     inventory: [{ itemId: 'potion', quantity: 3 }, { itemId: 'ether', quantity: 1 }],
-    enemies, relicCollected: false, steps: 0, battle: null,
+    enemies, relicCollected: false, steps: 0, battle: null, storyEventsCompleted: [],
     message: { name: 'SYSTEM', text: 'はじまりの村から冒険を始めよう。森や港への道を探し、海へは港の船で出航する。', status: '探索中' }
   };
 }
@@ -34,6 +34,7 @@ export function normalizeState(saved) {
   player.x = Math.max(1, Math.min(area.layout[0].length - 2, Math.floor(player.x)));
   player.y = Math.max(1, Math.min(area.layout.length - 2, Math.floor(player.y)));
   if (area.layout[player.y]?.[player.x] === '#') { player.x = area.start.x; player.y = area.start.y; }
-  return { ...fresh, ...saved, version: 3, worldId: areaId, areaId, player, inventory: validItems, enemies: validEnemies, battle: null,
+  const storyEventsCompleted = Array.isArray(saved.storyEventsCompleted) ? saved.storyEventsCompleted.filter((id) => typeof id === 'string') : [];
+  return { ...fresh, ...saved, version: 3, worldId: areaId, areaId, player, inventory: validItems, enemies: validEnemies, battle: null, storyEventsCompleted,
     message: saved.message && typeof saved.message.text === 'string' ? saved.message : fresh.message };
 }
