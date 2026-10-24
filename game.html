@@ -30,8 +30,15 @@
           <div class="battle-actions">
             <button class="command" type="button" data-battle-action="attack">攻撃</button>
             <button class="command" type="button" data-battle-action="ripple">波紋 <small>MP 3</small></button>
+            <button class="command" type="button" data-battle-action="assistant-menu" id="assistantMenuButton" hidden>アシスタント <small>PHASE-1</small></button>
             <button class="command" type="button" data-battle-action="item:potion">回復薬</button>
             <button class="command" type="button" data-battle-action="flee">逃げる</button>
+          </div>
+          <div class="assistant-actions" id="assistantActions" hidden aria-label="アシスタント技">
+            <div class="assistant-actions-heading">Cry of the Lost One · PHASE-1</div>
+            <button class="command" type="button" data-battle-action="assistant:life-hates-me">life hates me <small>即死 4%</small></button>
+            <button class="command" type="button" data-battle-action="assistant:delusional-sentiment-compensation-federation">Delusional Sentiment Compensation Federation <small>波紋補助</small></button>
+            <button class="command" type="button" data-battle-action="assistant:nombrese-oblige">Nombrese Oblige <small>呼吸準備</small></button>
           </div>
         </section>
         <div class="panel-title">MESSAGE / メッセージ</div>
