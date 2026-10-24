@@ -197,3 +197,5 @@
 .assistant-actions-heading { color: var(--gold); font-size: .78rem; letter-spacing: .08em; }
 .assistant-actions .command { font-size: .86rem; }
 .assistant-actions .command small { white-space: nowrap; }
+
+.command[hidden] { display: none !important; }
