@@ -113,6 +113,7 @@
             if (!Array.isArray(state.storyEventsCompleted)) state.storyEventsCompleted = [];
             if (!state.storyEventsCompleted.includes(eventId)) state.storyEventsCompleted.push(eventId);
             if (eventId === 'S2') state.coreFragmentObtained = true;
+            if (eventId === 'S3') state.assistantPhase1Unlocked = true;
             sessionStorage.setItem('voidMasterStoryHandoff', JSON.stringify({ state }));
           }
         }
