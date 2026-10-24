@@ -189,3 +189,11 @@
   border-color: #d6f7ff;
   box-shadow: inset 0 0 0 2px #d6f7ff, 0 0 12px #8adfff99;
 }
+
+
+/* Cry of the Lost One: PHASE-1 battle command expansion */
+.assistant-actions { display: grid; gap: 8px; padding: 12px 14px 14px; border-top: 1px solid var(--line); background: #121b2b; }
+.assistant-actions[hidden] { display: none; }
+.assistant-actions-heading { color: var(--gold); font-size: .78rem; letter-spacing: .08em; }
+.assistant-actions .command { font-size: .86rem; }
+.assistant-actions .command small { white-space: nowrap; }
