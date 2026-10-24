@@ -2,8 +2,8 @@ export const GAME_VERSION = '0.2.0';
 const MAP_WIDTH = 51;
 const MAP_HEIGHT = 37;
 
-function buildAreaMap({ start, exits, enemies = [], relics = [], walls = [] }) {
-  const grid = Array.from({ length: MAP_HEIGHT }, (_, y) => Array.from({ length: MAP_WIDTH }, (_, x) =>
+function buildAreaMap({ start, exits, enemies = [], relics = [], walls = [], width = MAP_WIDTH, height = MAP_HEIGHT, defaultWalls: useDefaultWalls = true }) {
+  const grid = Array.from({ length: height }, (_, y) => Array.from({ length: width }, (_, x) =>
     x === 0 || y === 0 || x === MAP_WIDTH - 1 || y === MAP_HEIGHT - 1 ? '#' : '.'));
   const defaultWalls = [
     { x: 12, from: 2, to: 27, gaps: [6, 15, 23] },
@@ -13,7 +13,7 @@ function buildAreaMap({ start, exits, enemies = [], relics = [], walls = [] }) {
     { y: 20, from: 3, to: 47, gaps: [10, 22, 34, 42] },
     { y: 29, from: 3, to: 47, gaps: [8, 19, 30, 42] }
   ];
-  [...defaultWalls, ...walls].forEach((wall) => {
+  [...(useDefaultWalls ? defaultWalls : []), ...walls].forEach((wall) => {
     if (wall.x !== undefined) {
       for (let y = wall.from; y <= wall.to; y += 1) if (!wall.gaps.includes(y)) grid[y][wall.x] = '#';
     } else {
@@ -94,11 +94,55 @@ export const AREAS = {
     exits: {
       F: { x: 3, y: 3, to: 'forest', spawn: { x: 35, y: 25 }, message: '山道を下り、深緑の森へ戻った。' },
       C: { x: 3, y: 25, to: 'cave', spawn: { x: 35, y: 25 }, message: '溶岩洞を通り、忘却の洞窟へ入った。' },
-      S: { x: 47, y: 3, to: 'sea', spawn: { x: 35, y: 25 }, message: '船着き場から海へ戻った。' }
+      S: { x: 47, y: 3, to: 'sea', spawn: { x: 35, y: 25 }, message: '船着き場から海へ戻った。' },
+      I: { x: 47, y: 31, to: 'inlet', spawn: { x: 5, y: 40 }, message: '灰燼の火山の奥で、蒼白い光に満ちた神域の入江を見つけた。' }
     },
-    layout: buildAreaMap({ exits: { F: { x: 3, y: 3 }, C: { x: 3, y: 25 }, S: { x: 47, y: 3 } }, enemies: [[10, 7, 'O'], [22, 13, 'E'], [31, 22, 'O']], relics: [[34, 25]], walls: [
+    layout: buildAreaMap({ exits: { F: { x: 3, y: 3 }, C: { x: 3, y: 25 }, S: { x: 47, y: 3 }, I: { x: 47, y: 31 } }, enemies: [[10, 7, 'O'], [22, 13, 'E'], [31, 22, 'O']], relics: [[34, 25]], walls: [
       { x: 12, from: 2, to: 27, gaps: [7, 16, 24] }, { x: 24, from: 2, to: 27, gaps: [5, 14, 22] }, { y: 18, from: 3, to: 37, gaps: [9, 20, 31] }
     ] })
+  },
+  inlet: {
+    id: 'inlet', name: '神域の入江', theme: 'inlet',
+    description: '空と水の境界が曖昧な、神秘の入江。水平線の向こうにも、淡い蒼光を帯びた島影と古代の石柱が続いている。遠近感は狂い、歩いても歩いても景色の全貌は見えない。ここは地図に収まる場所ではない。',
+    start: { x: 5, y: 40 },
+    exits: {
+      V: { x: 3, y: 40, to: 'volcano', spawn: { x: 45, y: 29 }, message: '蒼い光の回廊を抜け、灰燼の火山へ戻った。' }
+    },
+    layout: buildAreaMap({
+      width: 121, height: 81, defaultWalls: false,
+      start: { x: 5, y: 40 },
+      exits: { V: { x: 3, y: 40 } },
+      walls: [
+        { x: 18, from: 8, to: 29, gaps: [13, 24] },
+        { x: 18, from: 48, to: 72, gaps: [55, 66] },
+        { x: 34, from: 4, to: 20, gaps: [11] },
+        { x: 34, from: 31, to: 49, gaps: [39] },
+        { x: 34, from: 60, to: 77, gaps: [68] },
+        { x: 51, from: 12, to: 34, gaps: [19, 28] },
+        { x: 51, from: 45, to: 70, gaps: [54, 63] },
+        { x: 68, from: 3, to: 24, gaps: [10, 18] },
+        { x: 68, from: 34, to: 51, gaps: [42] },
+        { x: 68, from: 61, to: 77, gaps: [69] },
+        { x: 85, from: 10, to: 30, gaps: [17, 25] },
+        { x: 85, from: 42, to: 72, gaps: [50, 62] },
+        { x: 101, from: 3, to: 18, gaps: [9] },
+        { x: 101, from: 29, to: 50, gaps: [36, 44] },
+        { x: 101, from: 60, to: 77, gaps: [67] },
+        { y: 17, from: 7, to: 29, gaps: [12, 22] },
+        { y: 17, from: 40, to: 63, gaps: [47, 57] },
+        { y: 17, from: 75, to: 111, gaps: [82, 96, 105] },
+        { y: 31, from: 22, to: 46, gaps: [27, 39] },
+        { y: 31, from: 59, to: 81, gaps: [65, 74] },
+        { y: 45, from: 8, to: 28, gaps: [15, 23] },
+        { y: 45, from: 39, to: 62, gaps: [46, 56] },
+        { y: 45, from: 76, to: 111, gaps: [84, 98, 106] },
+        { y: 59, from: 20, to: 44, gaps: [29, 37] },
+        { y: 59, from: 55, to: 79, gaps: [63, 73] },
+        { y: 71, from: 7, to: 31, gaps: [14, 24] },
+        { y: 71, from: 43, to: 68, gaps: [51, 62] },
+        { y: 71, from: 79, to: 111, gaps: [87, 100, 108] }
+      ]
+    })
   }
 };
 export const WORLD = AREAS.village;
@@ -125,5 +169,6 @@ export const TILE_INFO = {
   M: { name: '火山への道', glyph: '▲', className: 'tile-exit' },
   H: { name: '港への道', glyph: '⚓', className: 'tile-exit' },
   B: { name: '船着き場', glyph: '⛵', className: 'tile-exit' },
-  S: { name: '火山島への船着き場', glyph: '⌁', className: 'tile-exit' }
+  S: { name: '火山島への船着き場', glyph: '⌁', className: 'tile-exit' },
+  I: { name: '神域の入江への道', glyph: '✧', className: 'tile-exit' }
 };
