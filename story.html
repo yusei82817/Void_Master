@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07180f">
+  <title>Void Master | Story</title>
+  <style>
+    :root { color-scheme: dark; --bg:#07180f; --panel:#10271b; --line:#31543b; --text:#edf4e8; --muted:#b4c8b4; --accent:#a8d98b; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; display:grid; place-items:center; padding:20px; color:var(--text); background:radial-gradient(ellipse at 50% 0%,#234b2c 0%,#0d2415 45%,var(--bg) 100%); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+    main { width:min(860px,100%); }
+    .eyebrow { color:var(--accent); font-size:.78rem; letter-spacing:.16em; }
+    h1 { margin:.45rem 0 1.2rem; font-size:clamp(1.45rem,4vw,2.2rem); }
+    .scene { border:1px solid var(--line); background:linear-gradient(145deg,rgba(18,47,29,.96),rgba(7,20,13,.98)); border-radius:16px; padding:clamp(20px,5vw,42px); min-height:300px; box-shadow:0 20px 70px #0005; }
+    .chapter { color:var(--accent); font-size:.9rem; margin-bottom:1.4rem; }
+    #speaker { color:var(--accent); font-weight:700; margin-bottom:.8rem; min-height:1.4em; }
+    #text { font-size:clamp(1rem,2.4vw,1.12rem); line-height:2; white-space:pre-wrap; }
+    .controls { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:18px; color:var(--muted); font-size:.88rem; }
+    button { border:1px solid #6b965b; border-radius:9px; background:#244b2b; color:#fff; padding:12px 22px; font:inherit; font-weight:650; cursor:pointer; }
+    button:hover { background:#32643a; } button:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+    #progress { font-variant-numeric:tabular-nums; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">VOID MASTER · STORY EVENT S1</div>
+    <h1 id="title">深緑の森の邂逅</h1>
+    <section class="scene" aria-live="polite" aria-atomic="true">
+      <div class="chapter" id="chapter">1. 森の入口</div>
+      <div id="speaker"></div>
+      <div id="text"></div>
+    </section>
+    <div class="controls">
+      <span id="progress">1 / 1</span>
+      <button id="next" type="button">次へ ▶</button>
+    </div>
+  </main>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const eventId = params.get('event') || 'S1';
+    const events = {
+      S1: {
+        title: '深緑の森の邂逅',
+        lines: [
+          { chapter:'1. 森の入口', speaker:'', text:'木々の緑が濃く重なり、上空の雲さえも遮られる。\nこの森は、エデンを囲む外壁の外側に残された、わずかな「まだ腐っていない」土地だ。\nだがそれも時間の問題だと、誰もが知っている。' },
+          { chapter:'1. 森の入口', speaker:'クレイン', text:'（木々の間を歩きながら）\n……ここまで調査隊の痕跡がないのか。' },
+          { chapter:'1. 森の入口', speaker:'', text:'森の奥へ踏み込むほど、空気が澄んでいく。\nクローロの瘴気は本来、もっと重く、肌に刺すようなはずなのに。\n手の甲の紋様が、微かに疼く。\nクレインはそれを押さえ込むように手を握り、歩を進める。' },
+          { chapter:'2. 泉のほとり', speaker:'', text:'視界が開け、小さな泉が姿を現す。\n周囲の木々は一際鮮やかな緑に輝き、泉の水面は青い光をたたえている。\nその中央に、一人の少女が倒れていた。' },
+          { chapter:'2. 泉のほとり', speaker:'クレイン', text:'（剣を抜く手を止め）\n……誰だ。\nこんな場所に、一人で。' },
+          { chapter:'2. 泉のほとり', speaker:'', text:'警戒しながら近づく。\n白い髪が木漏れ日にさらされ、衣は薄く、瘴気で傷むはずの肌には一点の曇りもない。\nまるで世界の腐敗が彼女には届いていないかのようだ。' },
+          { chapter:'2. 泉のほとり', speaker:'リーナ', text:'（うっすらと目を開け）\n……ここは。\n私は……' },
+          { chapter:'2. 泉のほとり', speaker:'クレイン', text:'大丈夫か？ 君、どうしてこんな所にいるんだ。\nこの先はクローロの侵食域が迫っている。普通なら、長くはいられないはずだ。' },
+          { chapter:'2. 泉のほとり', speaker:'リーナ', text:'（ゆっくりと体を起こし、周囲を見渡し）\n黒く……ない。\n闇に、飲まれていない。\n……きれい。' },
+          { chapter:'2. 泉のほとり', speaker:'クレイン', text:'（眉をひそめ）\n君、瘴気に当たっていないのか？\n外の大地は既に黒く濁り、生き物の姿さえ消えている。\nこの森が例外なだけだ。' },
+          { chapter:'2. 泉のほとり', speaker:'リーナ', text:'手を伸ばしても、痛くない。\n吸い込まれない。\n私……何も分からないの。\n目が覚めたら、闇の中にいて。\nそれで歩いていたら——この光に、導かれるように。' },
+          { chapter:'2. 泉のほとり', speaker:'', text:'彼女の瞳は深海のような蒼色で、真っ直ぐにクレインを見つめる。\nその視線には疑いも恐れもなく、ただ純粋な問いかけが宿っている。' },
+          { chapter:'2. 泉のほとり', speaker:'クレイン', text:'（手の甲の紋様が、彼女の方を向いて微かに輝く）\n……俺の紋が反応している。\n初めてだ。これほど強く。' },
+          { chapter:'2. 泉のほとり', speaker:'リーナ', text:'その紋様……\n暖かい。\n守ってくれるような……気がする。' },
+          { chapter:'2. 泉のほとり', speaker:'クレイン', text:'俺はクレイン。エデンの警備員だ。\n君の名前は？' },
+          { chapter:'2. 泉のほとり', speaker:'リーナ', text:'……リーナ。\nそれだけは覚えている。\nそれ以外は、何も。' },
+          { chapter:'2. 泉のほとり', speaker:'クレイン', text:'リーナか。\n——このまま森にいるのは危険だ。\n侵食は確実に迫っている。エデンまで一緒に来なさい。\n詳しい話は、そこで聞けばいい。' },
+          { chapter:'2. 泉のほとり', speaker:'リーナ', text:'うん。\nクレイン……さん。\nあなたと一緒なら、怖くない。' },
+          { chapter:'2. 泉のほとり', speaker:'', text:'少女はゆっくりと立ち上がり、クレインの差し出した手を取る。\nその瞬間、手の甲の紋様が蒼い光と重なり、一瞬だけ森全体が明るく輝いた。\n木々の葉がそよぎ、泉の水面が穏やかに波打つ。\n二人の出会いが、静かに終わりゆく世界の運命を動かし始めた。' },
+          { chapter:'3. 幕間', speaker:'', text:'クレインがリーナを伴い森を後にする。\n背後では、木々の緑が少しだけ濃くなったように見えた。\nだがそれも束の間、遠くの空にはクローロの黒い靄が、確実に広がり始めているのだった。\n\n—— S1 了 ——' }
+        ]
+      }
+    };
+    const event = events[eventId];
+    const chapterEl = document.getElementById('chapter');
+    const speakerEl = document.getElementById('speaker');
+    const textEl = document.getElementById('text');
+    const progressEl = document.getElementById('progress');
+    const nextButton = document.getElementById('next');
+    let index = 0;
+
+    function finishEvent() {
+      try {
+        const raw = sessionStorage.getItem('voidMasterStoryHandoff');
+        if (raw) {
+          const handoff = JSON.parse(raw);
+          if (handoff && handoff.state) {
+            const state = handoff.state;
+            if (!Array.isArray(state.storyEventsCompleted)) state.storyEventsCompleted = [];
+            if (!state.storyEventsCompleted.includes(eventId)) state.storyEventsCompleted.push(eventId);
+            sessionStorage.setItem('voidMasterStoryHandoff', JSON.stringify({ state }));
+          }
+        }
+      } catch (error) {
+        console.error('Story completion handoff failed:', error);
+      }
+      location.href = 'game.html';
+    }
+
+    function renderLine() {
+      const line = event.lines[index];
+      chapterEl.textContent = line.chapter;
+      speakerEl.textContent = line.speaker;
+      textEl.textContent = line.text;
+      progressEl.textContent = (index + 1) + ' / ' + event.lines.length;
+      nextButton.textContent = index === event.lines.length - 1 ? '探索に戻る ▶' : '次へ ▶';
+    }
+
+    if (!event) {
+      document.getElementById('title').textContent = '不明なストーリーイベント';
+      chapterEl.textContent = 'ERROR';
+      textEl.textContent = 'イベントID「' + eventId + '」は登録されていない。';
+      progressEl.textContent = '';
+      nextButton.textContent = 'ゲームに戻る';
+      nextButton.addEventListener('click', () => { location.href = 'game.html'; });
+    } else {
+      document.getElementById('title').textContent = event.title;
+      nextButton.addEventListener('click', () => {
+        if (index < event.lines.length - 1) {
+          index += 1;
+          renderLine();
+        } else {
+          finishEvent();
+        }
+      });
+      renderLine();
+    }
+  </script>
+</body>
+</html>
