@@ -1,4 +1,4 @@
-import { createInitialState } from './state.js';
+import { createInitialState, normalizeState } from './state.js';
 import { WorldSystem } from './world.js';
 import { BattleSystem } from './battle.js';
 import { SaveSystem } from './save.js';
@@ -22,6 +22,20 @@ export class GameEngine {
   }
 
   start() {
+    // Restore the exact exploration state after a story page returns.
+    try {
+      const handoff = sessionStorage.getItem('voidMasterStoryHandoff');
+      if (handoff) {
+        sessionStorage.removeItem('voidMasterStoryHandoff');
+        const restored = JSON.parse(handoff);
+        if (restored && restored.state) {
+          this.state = normalizeState(restored.state);
+          this.world.world = this.world.getWorld(this.state);
+        }
+      }
+    } catch (error) {
+      console.error('Story handoff restore failed:', error);
+    }
     this.document.addEventListener('keydown', this.boundKeyHandler);
     this.document.addEventListener('click', this.boundCommandHandler);
     this.render();
@@ -109,6 +123,17 @@ export class GameEngine {
     const movedSteps = this.state.steps - previousSteps;
     if (result.travel || result.relic || (movedSteps > 0 && this.state.steps % 10 === 0) || this.state.areaId !== previousAreaId) {
       this.save.saveAuto(this.state);
+    }
+    // S1 begins automatically on the first entry into the Deep Green Forest.
+    if (result.travel && this.state.areaId === 'forest' &&
+        !this.state.storyEventsCompleted?.includes('S1')) {
+      try {
+        sessionStorage.setItem('voidMasterStoryHandoff', JSON.stringify({ state: this.state }));
+      } catch (error) {
+        console.error('Story handoff save failed:', error);
+      }
+      window.location.href = 'story.html?event=S1';
+      return;
     }
     this.render();
   }
