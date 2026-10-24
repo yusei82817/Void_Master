@@ -4,6 +4,7 @@ import { BattleSystem } from './battle.js';
 import { SaveSystem } from './save.js';
 import { GameUI } from './ui.js';
 import { useItem } from './inventory.js';
+import { playSE } from './audio.js';
 
 export class GameEngine {
   constructor(documentRef = document, systems = {}) {
@@ -120,6 +121,9 @@ export class GameEngine {
         status: '探索中'
       };
     }
+    if (result.travel && previousAreaId === 'port' && this.state.areaId === 'sea') {
+      playSE('shipLaunch');
+    }
     const movedSteps = this.state.steps - previousSteps;
     if (result.travel || result.relic || (movedSteps > 0 && this.state.steps % 10 === 0) || this.state.areaId !== previousAreaId) {
       this.save.saveAuto(this.state);
@@ -158,6 +162,8 @@ export class GameEngine {
     const wasInBattle = Boolean(this.state.battle);
     const [action, itemId] = actionSpec.split(':');
     const result = this.battle.act(this.state, action, itemId || null);
+    if (result.ok && action === 'attack') playSE('attack');
+    if (result.ok && action === 'item' && itemId === 'ether') playSE('mpRestore');
     if (result.message) {
       this.state.message = {
         name: result.status === '戦闘中' ? 'BATTLE' : 'RESULT',
@@ -185,6 +191,7 @@ export class GameEngine {
     }
     // Outside battle, item use is a free action.
     const result = useItem(this.state, itemId);
+    if (result.ok && itemId === 'ether') playSE('mpRestore');
     this.setMessage(result.ok ? 'ITEM' : 'SYSTEM', result.message);
     this.ui.showInventory(this.state, false);
   }
