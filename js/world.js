@@ -20,6 +20,16 @@ export class WorldSystem {
     const area = this.getWorld(state), cell = this.getCell(x, y, state);
     state.player.x = x; state.player.y = y; state.steps += 1;
     const exit = area.exits?.[cell];
+    if (exit && area.id === 'cave' && cell === 'M' &&
+        !state.storyEventsCompleted?.includes('S2')) {
+      state.player.x -= dx; state.player.y -= dy; state.steps = Math.max(0, state.steps - 1);
+      return { ok: false, message: '溶岩洞の先はまだ進めない。洞窟の奥にあるものを確かめよう。' };
+    }
+    if (exit && area.id === 'volcano' && cell === 'C' &&
+        !state.storyEventsCompleted?.includes('S2')) {
+      state.player.x -= dx; state.player.y -= dy; state.steps = Math.max(0, state.steps - 1);
+      return { ok: false, message: '忘却の洞窟へ続く溶岩洞は、まだ通れない。' };
+    }
     if (exit) {
       state.areaId = exit.to; state.worldId = exit.to;
       state.player.x = exit.spawn.x; state.player.y = exit.spawn.y;
