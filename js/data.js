@@ -4,7 +4,7 @@ const MAP_HEIGHT = 37;
 
 function buildAreaMap({ start, exits, enemies = [], relics = [], walls = [], width = MAP_WIDTH, height = MAP_HEIGHT, defaultWalls: useDefaultWalls = true }) {
   const grid = Array.from({ length: height }, (_, y) => Array.from({ length: width }, (_, x) =>
-    x === 0 || y === 0 || x === MAP_WIDTH - 1 || y === MAP_HEIGHT - 1 ? '#' : '.'));
+    x === 0 || y === 0 || x === width - 1 || y === height - 1 ? '#' : '.'));
   const defaultWalls = [
     { x: 12, from: 2, to: 27, gaps: [6, 15, 23] },
     { x: 24, from: 3, to: 34, gaps: [9, 18, 25, 31] },
