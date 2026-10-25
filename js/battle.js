@@ -55,17 +55,25 @@ export class BattleSystem {
 
     let message = '';
     if (action === 'attack') {
-      const damage = Math.max(1, player.attack + this.roll(-2, 2) - enemy.defense);
-      enemy.hp = Math.max(0, enemy.hp - damage);
-      message = player.name + 'の攻撃。' + enemy.name + 'に' + damage + 'ダメージ。';
+      if (enemy.normalAttackImmune) {
+        message = player.name + 'の通常攻撃は' + enemy.name + 'に通用しない。';
+      } else {
+        const damage = Math.max(1, player.attack + this.roll(-2, 2) - enemy.defense);
+        enemy.hp = Math.max(0, enemy.hp - damage);
+        message = player.name + 'の攻撃。' + enemy.name + 'に' + damage + 'ダメージ。';
+      }
     } else if (action === 'ripple') {
-      if (player.mp < 3) return { ok: false, message: 'MPが足りない。波紋にはMPが3必要だ。' };
-      player.mp -= 3;
-      const multiplier = enemy.kind === 'oni' ? 1.8 : 1;
-      const damage = Math.max(2, Math.floor((player.attack + 6 + this.roll(0, 3) - enemy.defense) * multiplier));
-      enemy.hp = Math.max(0, enemy.hp - damage);
-      message = '波紋を放った。' + enemy.name + 'に' + damage + 'ダメージ。';
-      if (enemy.kind === 'oni') message += ' 鬼族に強く作用した！';
+      if (enemy.rippleImmune) {
+        message = enemy.name + 'には波紋が通用しない。';
+      } else {
+        if (player.mp < 3) return { ok: false, message: 'MPが足りない。波紋にはMPが3必要だ。' };
+        player.mp -= 3;
+        const multiplier = enemy.kind === 'oni' ? 1.8 : 1;
+        const damage = Math.max(2, Math.floor((player.attack + 6 + this.roll(0, 3) - enemy.defense) * multiplier));
+        enemy.hp = Math.max(0, enemy.hp - damage);
+        message = '波紋を放った。' + enemy.name + 'に' + damage + 'ダメージ。';
+        if (enemy.kind === 'oni') message += ' 鬼族に強く作用した！';
+      }
     } else if (action === 'item') {
       const result = useItem(state, itemId);
       if (!result.ok) return result;
@@ -96,13 +104,40 @@ export class BattleSystem {
     if (!battle) return '';
     const player = state.player;
     const enemy = battle.enemy;
-    const damage = Math.max(1, enemy.attack + this.roll(-1, 2) - player.defense);
-    player.hp = Math.max(0, player.hp - damage);
+    const messages = [];
+
+    if (enemy.spikeChance && Math.random() < enemy.spikeChance && !battle.caltropsActive) {
+      battle.caltropsActive = true;
+      const damage = 2;
+      player.hp = Math.max(0, player.hp - damage);
+      messages.push(enemy.name + 'はマキビシを投げた！ 足元に散らばり、踏むたびにターンごとに2ダメージを受ける。設置時にも' + damage + 'ダメージ。');
+    } else {
+      const hits = enemy.doubleAttackChance && Math.random() < enemy.doubleAttackChance ? 2 : 1;
+      for (let hit = 0; hit < hits && player.hp > 0; hit += 1) {
+        const damage = Math.max(1, enemy.attack + this.roll(-1, 2) - player.defense);
+        player.hp = Math.max(0, player.hp - damage);
+        messages.push(enemy.name + (hits === 2 ? 'の連続攻撃' : 'の反撃') + '。' + damage + 'ダメージを受けた。');
+      }
+    }
+
+    if (player.hp > 0 && battle.caltropsActive && !enemy.spikeChance) {
+      player.hp = Math.max(0, player.hp - 2);
+      messages.push('マキビシを踏んだ。2ダメージを受けた。');
+    } else if (player.hp > 0 && battle.caltropsActive && enemy.spikeChance && messages[0]?.startsWith(enemy.name + 'のマキビシ')) {
+      // The turn the spikes are thrown already dealt their initial damage; ongoing damage starts next turn.
+      battle.caltropsJustThrown = true;
+    } else if (battle.caltropsActive && battle.caltropsJustThrown) {
+      battle.caltropsJustThrown = false;
+    } else if (player.hp > 0 && battle.caltropsActive && !messages[0]?.includes('マキビシ')) {
+      player.hp = Math.max(0, player.hp - 2);
+      messages.push('マキビシを踏んだ。2ダメージを受けた。');
+    }
+
     if (player.hp <= 0) {
       state.battle = null;
-      return enemy.name + 'の反撃。' + damage + 'ダメージを受け、意識を失った。HPは1に戻り、開始地点へ退避した。';
+      return messages.join(' ') + ' ' + enemy.name + 'の攻撃で意識を失った。HPは1に戻り、開始地点へ退避した。';
     }
-    return enemy.name + 'の反撃。' + damage + 'ダメージを受けた。';
+    return messages.join(' ');
   }
 
   checkLevelUp(state) {
