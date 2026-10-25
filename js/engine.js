@@ -142,6 +142,10 @@ export class GameEngine {
         this.state.storyEventsCompleted?.includes('S1') &&
         !this.state.storyEventsCompleted?.includes('S2')) {
       storyEventToStart = 'S2';
+    } else if (result.travel && this.state.areaId === 'volcano' &&
+        this.state.storyEventsCompleted?.includes('S2') &&
+        !this.state.storyEventsCompleted?.includes('S3')) {
+      storyEventToStart = 'S3';
     }
     if (storyEventToStart) {
       try {
