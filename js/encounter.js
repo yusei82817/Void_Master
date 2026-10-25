@@ -1,4 +1,4 @@
-import { ENEMIES } from './data.js';
+import { AREAS, ENEMIES } from './data.js';
 
 // 接触エンカウントとランダムエンカウントをワールド移動から分離する。
 export class EncounterSystem {
@@ -20,6 +20,8 @@ export class EncounterSystem {
   }
 
   rollRandomEncounter(state, x, y, cell) {
+    const area = AREAS[state.areaId];
+    if (area?.randomEncounters === false || area?.safe === true) return null;
     if (cell !== '.' || state.battle || this.random() >= this.randomRate) return null;
 
     const dangerousAreas = ['cave', 'volcano', 'sea'];
