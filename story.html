@@ -39,6 +39,22 @@
   <script>
     const params = new URLSearchParams(location.search);
     const eventId = params.get('event') || 'S1';
+
+    // Story pages are separate documents, so restart the current area's looped BGM here.
+    // The game stores its exploration state in sessionStorage before navigating to this page.
+    let storyAreaId = ({ S1: 'forest', S2: 'cave', S3: 'volcano' })[eventId] || 'village';
+    try {
+      const rawHandoff = sessionStorage.getItem('voidMasterStoryHandoff');
+      if (rawHandoff) {
+        const handoff = JSON.parse(rawHandoff);
+        if (handoff?.state?.areaId) storyAreaId = handoff.state.areaId;
+      }
+    } catch (error) {
+      console.error('Story BGM handoff read failed:', error);
+    }
+    import('./js/bgm.js')
+      .then(({ setBackgroundMusic }) => setBackgroundMusic(storyAreaId, document))
+      .catch((error) => console.error('Story BGM failed to initialize:', error));
     const events = {
       S1: {
         title: '深緑の森の邂逅',
