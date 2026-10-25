@@ -266,12 +266,10 @@ export class GameEngine {
       };
     }
     if (this.state.player.hp <= 0) {
-      this.state.player.hp = 1;
-      const area = this.world.getWorld(this.state);
-      this.state.player.x = area.start?.x ?? 3;
-      this.state.player.y = area.start?.y ?? 3;
-      this.state.message.text += ' 近くの安全な場所まで退避した。';
-      this.state.message.status = '探索中';
+      // HPが0になったら復活処理は行わず、ゲームオーバー画面へ遷移する。
+      this.state.battle = null;
+      window.location.href = 'GameOver.html';
+      return;
     }
     if (wasInBattle && enemyAtActionStart?.hp <= 0) {
       this.advanceLokiGauntlet(enemyAtActionStart);
