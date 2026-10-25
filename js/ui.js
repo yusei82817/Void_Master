@@ -1,5 +1,5 @@
 import { ITEMS, TILE_INFO } from './data.js';
-import { getItem, countItem } from './inventory.js';
+import { getItem, countItem, getEquippedItem, getEffectiveStats } from './inventory.js';
 import { CameraSystem } from './camera.js';
 import { SHOP_ITEMS } from './shop.js';
 
@@ -39,9 +39,10 @@ export class GameUI {
       if (event.target === this.dialog) this.closeDialog();
     });
     this.dialogBody?.addEventListener('click', (event) => {
-      const button = event.target.closest('[data-item-use], [data-dialog-action]');
+      const button = event.target.closest('[data-item-use], [data-dialog-action], [data-equip-item]');
       if (!button) return;
       if (button.dataset.itemUse && this.onItemUse) this.onItemUse(button.dataset.itemUse);
+      if (button.dataset.equipItem && this.onDialogAction) this.onDialogAction('equip:' + button.dataset.equipItem);
       if (button.dataset.dialogAction && this.onDialogAction) this.onDialogAction(button.dataset.dialogAction);
     });
     this.battlePanel?.addEventListener('click', (event) => {
@@ -141,6 +142,17 @@ export class GameUI {
       description.textContent = item.description;
       info.append(name, description);
       row.appendChild(info);
+      if (item.type === 'equipment') {
+        const slot = item.slot === 'weapon' ? 'weapon' : 'armor';
+        const equipped = state.equipment?.[slot] === item.id;
+        const button = this.document.createElement('button');
+        button.type = 'button';
+        button.className = 'command';
+        button.textContent = equipped ? '装備中' : '装備する';
+        button.dataset.equipItem = item.id;
+        button.disabled = equipped;
+        row.appendChild(button);
+      }
       if (item.type === 'consumable') {
         const button = this.document.createElement('button');
         button.type = 'button';
@@ -152,6 +164,11 @@ export class GameUI {
       }
       fragment.appendChild(row);
     });
+    const equipmentSummary = this.document.createElement('p');
+    const weapon = getEquippedItem(state, 'weapon');
+    const armor = getEquippedItem(state, 'armor');
+    equipmentSummary.textContent = '装備：武器 ' + (weapon?.name || 'なし') + ' ／ 防具 ' + (armor?.name || 'なし');
+    fragment.prepend(equipmentSummary);
     if (!state.inventory.length) {
       const empty = this.document.createElement('p');
       empty.textContent = '持ち物は空だ。';
@@ -198,7 +215,8 @@ export class GameUI {
     const values = [
       ['名前', p.name], ['レベル', p.level], ['経験値', p.exp + ' / ' + p.nextExp],
       ['HP', p.hp + ' / ' + p.maxHp], ['MP', p.mp + ' / ' + p.maxMp],
-      ['攻撃', p.attack], ['防御', p.defense], ['所持金', p.gold + ' G'],
+      ['攻撃', getEffectiveStats(state).attack + '（基礎 ' + p.attack + '）'], ['防御', getEffectiveStats(state).defense + '（基礎 ' + p.defense + '）'],
+      ['武器', getEquippedItem(state, 'weapon')?.name || 'なし'], ['防具', getEquippedItem(state, 'armor')?.name || 'なし'], ['所持金', p.gold + ' G'],
       ['歩数', state.steps], ['核の欠片', countItem(state, 'coreFragment') + ' 個']
     ];
     values.forEach(([label, value]) => {
