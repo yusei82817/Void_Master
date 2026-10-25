@@ -155,12 +155,6 @@
 .map-grid[data-area="cave"] .tile-floor { background: #555965; }
 .map-grid[data-area="port"] .tile-floor { background: #8a7850; }
 .map-grid[data-area="volcano"] .tile-floor { background: #73372d; }
-.map-grid[data-area="village"] .tile-wall { background: #354a30; }
-.map-grid[data-area="forest"] .tile-wall { background: #173b27; }
-.map-grid[data-area="sea"] .tile-wall { background: #163b64; }
-.map-grid[data-area="cave"] .tile-wall { background: #343640; }
-.map-grid[data-area="port"] .tile-wall { background: #55452f; }
-.map-grid[data-area="volcano"] .tile-wall { background: #48231f; }
 .map-tile.has-enemy::after {
   content: "";
   position: absolute;
@@ -175,10 +169,6 @@
 .map-grid[data-area="inlet"] .tile-floor {
   background: #274a68;
   box-shadow: inset 0 0 0 1px #8adfff12;
-}
-.map-grid[data-area="inlet"] .tile-wall {
-  background: #756da0;
-  box-shadow: inset 0 0 0 1px #c8baff25;
 }
 .map-grid[data-area="inlet"] .tile-exit {
   background: #b8e8ff;
