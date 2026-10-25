@@ -1,5 +1,5 @@
 import { ENEMIES } from './data.js';
-import { useItem } from './inventory.js';
+import { useItem, getEffectiveStats } from './inventory.js';
 import { applyAssistantTechnique } from './assistant-combat.js';
 
 const GHOST_RULE_PHASES = [
@@ -96,7 +96,7 @@ export class BattleSystem {
         let damage;
         if (action === 'ripple') {
           player.mp -= 3;
-          damage = Math.max(2, Math.floor(player.attack + 6 + this.roll(0, 3) - enemy.defense));
+          damage = Math.max(2, Math.floor(getEffectiveStats(state).attack + 6 + this.roll(0, 3) - enemy.defense));
           message = '波紋を放った。' + enemy.name + 'に' + damage + 'ダメージ。';
         } else {
           damage = Math.max(1, player.attack + this.roll(-2, 2) - enemy.defense);
@@ -163,7 +163,7 @@ export class BattleSystem {
     if (stage === 0) {
       const move = this.roll(0, 2);
       if (move === 0) {
-        raw = Math.max(2, enemy.attack + this.roll(-1, 1) - player.defense);
+        raw = Math.max(2, enemy.attack + this.roll(-1, 1) - getEffectiveStats(state).defense);
         message = enemy.name + '「いくぞ！ これでたたっ斬る！」 両鋏挟撃。2連続攻撃。';
         let total = 0;
         for (let i = 0; i < 2 && player.hp > 0; i += 1) {
@@ -173,24 +173,24 @@ export class BattleSystem {
         message += ' 合計' + total + 'ダメージ。';
         return { message, victory: false };
       } else if (move === 1) {
-        raw = Math.max(3, enemy.attack + 3 - player.defense);
+        raw = Math.max(3, enemy.attack + 3 - getEffectiveStats(state).defense);
         message = enemy.name + '「まっすぐ行くぜ！ どけー！」 甲羅突進。';
       } else {
-        raw = Math.max(3, enemy.attack + 1 - player.defense);
+        raw = Math.max(3, enemy.attack + 1 - getEffectiveStats(state).defense);
         message = enemy.name + '「これで一網打尽だ！ 喰らえー！」 乱鋏旋風。次のターン、敵は隙を見せる。';
         battle.enemyStunnedNext = true;
       }
     } else if (stage === 1) {
       const move = this.roll(0, 2);
       if (move === 0) {
-        raw = Math.max(2, enemy.attack - player.defense);
+        raw = Math.max(2, enemy.attack - getEffectiveStats(state).defense);
         enemy.hp = Math.min(enemy.maxHp, enemy.hp + 2);
         message = enemy.name + '「すまないね……痛くしないように済ませたいんだが」 甲羅弾き。敵HPが2回復。';
       } else if (move === 1) {
-        raw = Math.max(5, enemy.attack + 4 - player.defense);
+        raw = Math.max(5, enemy.attack + 4 - getEffectiveStats(state).defense);
         message = enemy.name + '「長く生きた分、一撃に込めている」 老獪の一撃。';
       } else {
-        raw = Math.max(7, enemy.attack + 7 - player.defense);
+        raw = Math.max(7, enemy.attack + 7 - getEffectiveStats(state).defense);
         message = enemy.name + '「……申し訳ない。これが最後だ」 渦殻砕き。防御を一部貫通する。';
         if (defending) raw = Math.max(4, Math.floor(raw * 0.75));
       }
@@ -199,26 +199,26 @@ export class BattleSystem {
       if (move === 0) {
         status.accuracyDownTurns = Math.max(status.accuracyDownTurns, 3);
         message = enemy.name + '「ちょっと……邪魔しないでくれるかな」 墨纏いの歩み。命中率ダウン（3ターン）。パンデはリーナへ接近した。';
-        raw = Math.max(1, enemy.attack - player.defense);
+        raw = Math.max(1, enemy.attack - getEffectiveStats(state).defense);
       } else if (move === 1) {
         status.speedDownTurns = Math.max(status.speedDownTurns, 2);
         message = enemy.name + '「君はそこにいて。主役は別にいるんだ」 触手の誘い。速度低下（2ターン）。';
         raw = 1;
       } else {
-        raw = Math.max(2, Math.floor((enemy.attack + 2 - player.defense) * 0.6));
+        raw = Math.max(2, Math.floor((enemy.attack + 2 - getEffectiveStats(state).defense) * 0.6));
         message = enemy.name + '「退屈だから、さっさとどいてくれない？」 紫刃・誘い裂き。手加減されている。';
       }
     } else if (stage === 3) {
       const lowHpBonus = player.hp <= player.maxHp * 0.3 ? 5 : player.hp <= player.maxHp * 0.6 ? 2 : 0;
       const move = this.roll(0, 2);
       if (move === 0) {
-        raw = Math.max(4, enemy.attack + 2 + lowHpBonus - player.defense);
+        raw = Math.max(4, enemy.attack + 2 + lowHpBonus - getEffectiveStats(state).defense);
         message = enemy.name + '「海の男の一撃、受けてみろ！」 波裂く牙。';
       } else if (move === 1) {
-        raw = Math.max(6, enemy.attack + 5 + lowHpBonus - player.defense);
+        raw = Math.max(6, enemy.attack + 5 + lowHpBonus - getEffectiveStats(state).defense);
         message = enemy.name + '「昔、海軍の船を真っ二つにした技だ！」 深海からの一撃。';
       } else {
-        raw = Math.max(8, enemy.attack + 7 + lowHpBonus - player.defense);
+        raw = Math.max(8, enemy.attack + 7 + lowHpBonus - getEffectiveStats(state).defense);
         message = enemy.name + '「これが俺の全力だ！ 耐えてみせろ！」 鮫王の片手斬。';
       }
     } else {
@@ -235,7 +235,7 @@ export class BattleSystem {
       }
       const move = this.roll(0, 2);
       if (move === 0) {
-        raw = Math.max(2, enemy.attack + this.roll(-1, 2) - player.defense);
+        raw = Math.max(2, enemy.attack + this.roll(-1, 2) - getEffectiveStats(state).defense);
         const d = Math.max(1, Math.floor(raw * (defending ? 0.5 : 1)));
         player.hp = Math.max(0, player.hp - d);
         const d2 = Math.max(1, Math.floor((raw + 1) * (defending ? 0.5 : 1)));
@@ -244,11 +244,11 @@ export class BattleSystem {
         if (player.hp > 0) player.hp = Math.max(0, player.hp - d3);
         return { message: enemy.name + '「俺の前では誰も立てない！ 退け！」 短刀連閃。3連続攻撃。', victory: false };
       } else if (move === 1) {
-        raw = Math.max(3, enemy.attack + 3 - player.defense);
+        raw = Math.max(3, enemy.attack + 3 - getEffectiveStats(state).defense);
         battle.attackBoostTurns = 2;
         message = enemy.name + '「核の欠片を手に入れた者が頂点に立つ！ それが真実だ！」 覇道の信念。攻撃力アップ（2ターン）。';
       } else {
-        raw = Math.max(4, enemy.attack + 5 - player.defense);
+        raw = Math.max(4, enemy.attack + 5 - getEffectiveStats(state).defense);
         message = enemy.name + '「リオーネも……世界も……全部俺のものだ！」 我が物支配。リオーネを引き寄せようとしている。';
       }
     }
@@ -379,7 +379,7 @@ export class BattleSystem {
     } else {
       const hits = enemy.doubleAttackChance && Math.random() < enemy.doubleAttackChance ? 2 : 1;
       for (let hit = 0; hit < hits && player.hp > 0; hit += 1) {
-        const rawDamage = Math.max(1, enemy.attack + this.roll(-1, 2) - player.defense);
+        const rawDamage = Math.max(1, enemy.attack + this.roll(-1, 2) - getEffectiveStats(state).defense);
         const damage = defending ? Math.max(1, Math.floor(rawDamage / 2)) : rawDamage;
         player.hp = Math.max(0, player.hp - damage);
         messages.push(enemy.name + (hits === 2 ? 'の連続攻撃' : 'の反撃') + '。' + damage + 'ダメージを受けた。' + (defending ? '（防御でダメージ半減）' : ''));
