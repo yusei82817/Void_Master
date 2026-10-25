@@ -49,7 +49,16 @@ export class GameEngine {
     } catch (error) {
       console.error('Story handoff restore failed:', error);
     }
-    if (this.state.storyEventsCompleted?.includes('S3')) {
+    if (this.state.storyEventsCompleted?.includes('S5')) {
+      if (!this.state.ghostRuleGauntlet) {
+        this.state.ghostRuleGauntlet = { active: true, completed: false, stage: 0 };
+      }
+      if (this.state.ghostRuleGauntlet.active && !this.state.battle) {
+        this.battle.startGhostRule(this.state, this.state.ghostRuleGauntlet.stage || 0);
+        this.save.saveAuto(this.state);
+      }
+    }
+    if (!this.state.ghostRuleGauntlet?.active && this.state.storyEventsCompleted?.includes('S3')) {
       if (!this.state.lokiGauntlet) {
         this.state.lokiGauntlet = { active: true, completed: false, stage: 0, remaining: LOKI_GAUNTLET[0].count };
       }
@@ -271,7 +280,25 @@ export class GameEngine {
       window.location.href = 'GameOver.html';
       return;
     }
-    if (wasInBattle && enemyAtActionStart?.hp <= 0) {
+    if (wasInBattle && result.ghostRuleVictory) {
+      const gauntlet = this.state.ghostRuleGauntlet || (this.state.ghostRuleGauntlet = { active: true, completed: false, stage: 4 });
+      gauntlet.active = false;
+      gauntlet.completed = true;
+      this.state.battle = null;
+      this.state.message = {
+        name: 'RESULT',
+        text: result.message + ' ゴーストルールとの連戦を制した。リオーネはクレインたちと共に進む。',
+        status: '探索中'
+      };
+      this.save.saveAuto(this.state);
+    } else if (wasInBattle && this.state.battle?.mode === 'ghostRule' && this.state.battle.phaseTransition) {
+      const gauntlet = this.state.ghostRuleGauntlet || (this.state.ghostRuleGauntlet = { active: true, completed: false, stage: 0 });
+      gauntlet.stage = this.state.battle.stageIndex + 1;
+      this.battle.advanceGhostRule(this.state);
+      delete this.state.battle.phaseTransition;
+      this.state.message.text = result.message + ' ' + this.state.message.text;
+      this.save.saveAuto(this.state);
+    } else if (wasInBattle && enemyAtActionStart?.hp <= 0) {
       this.advanceLokiGauntlet(enemyAtActionStart);
       this.save.saveAuto(this.state);
     } else if (wasInBattle && !this.state.battle) {
