@@ -303,8 +303,8 @@ export class BattleSystem {
         const record = state.enemies.find((entry) => entry.id === battle.enemyId);
         if (record) record.defeated = true;
         player.exp += enemy.exp;
-        player.gold += enemy.gold;
-        message += ' ' + enemy.name + 'を倒した。EXP +' + enemy.exp + '、G +' + enemy.gold + '。';
+        player.gold += enemy.gold * (battle.goldRewardMultiplier || 1);
+        message += ' ' + enemy.name + 'を倒した。EXP +' + enemy.exp + '、G +' + (enemy.gold * (battle.goldRewardMultiplier || 1)) + '。';
         state.battle = null;
         const levelMessage = this.checkLevelUp(state);
         if (levelMessage) message += ' ' + levelMessage;
@@ -348,8 +348,8 @@ export class BattleSystem {
       const record = state.enemies.find((entry) => entry.id === battle.enemyId);
       if (record) record.defeated = true;
       player.exp += enemy.exp;
-      player.gold += enemy.gold;
-      message += ' ' + enemy.name + 'を倒した。EXP +' + enemy.exp + '、G +' + enemy.gold + '。';
+      player.gold += enemy.gold * (battle.goldRewardMultiplier || 1);
+      message += ' ' + enemy.name + 'を倒した。EXP +' + enemy.exp + '、G +' + (enemy.gold * (battle.goldRewardMultiplier || 1)) + '。';
       state.battle = null;
       const levelMessage = this.checkLevelUp(state);
       if (levelMessage) message += ' ' + levelMessage;
