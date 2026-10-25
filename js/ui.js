@@ -95,7 +95,7 @@ export class GameUI {
         const tile = this.document.createElement('div');
         tile.className = 'map-tile ' + info.className + (isPlayer ? ' is-player' : '') + (enemy ? ' has-enemy' : '');
         // Keep terrain tiles texture-free; entities are overlays, not tile artwork.
-        tile.textContent = isPlayer ? '♙' : '';
+        tile.textContent = isPlayer ? '♙' : (['D', 'W', 'A'].includes(cell) ? info.glyph : '');
         tile.setAttribute('role', 'gridcell');
         tile.setAttribute('aria-label', isPlayer ? 'プレイヤー' : info.name);
         fragment.appendChild(tile);
