@@ -105,12 +105,13 @@ export class BattleSystem {
     const player = state.player;
     const enemy = battle.enemy;
     const messages = [];
+    const hadCaltrops = Boolean(battle.caltropsActive);
 
     if (enemy.spikeChance && Math.random() < enemy.spikeChance && !battle.caltropsActive) {
       battle.caltropsActive = true;
       const damage = 2;
       player.hp = Math.max(0, player.hp - damage);
-      messages.push(enemy.name + 'はマキビシを投げた！ 足元に散らばり、踏むたびにターンごとに2ダメージを受ける。設置時にも' + damage + 'ダメージ。');
+      messages.push(enemy.name + 'はマキビシを投げた！ 設置時に' + damage + 'ダメージ。以後、この戦闘中はターンごとに2ダメージを受ける。');
     } else {
       const hits = enemy.doubleAttackChance && Math.random() < enemy.doubleAttackChance ? 2 : 1;
       for (let hit = 0; hit < hits && player.hp > 0; hit += 1) {
@@ -120,15 +121,7 @@ export class BattleSystem {
       }
     }
 
-    if (player.hp > 0 && battle.caltropsActive && !enemy.spikeChance) {
-      player.hp = Math.max(0, player.hp - 2);
-      messages.push('マキビシを踏んだ。2ダメージを受けた。');
-    } else if (player.hp > 0 && battle.caltropsActive && enemy.spikeChance && messages[0]?.startsWith(enemy.name + 'のマキビシ')) {
-      // The turn the spikes are thrown already dealt their initial damage; ongoing damage starts next turn.
-      battle.caltropsJustThrown = true;
-    } else if (battle.caltropsActive && battle.caltropsJustThrown) {
-      battle.caltropsJustThrown = false;
-    } else if (player.hp > 0 && battle.caltropsActive && !messages[0]?.includes('マキビシ')) {
+    if (player.hp > 0 && hadCaltrops) {
       player.hp = Math.max(0, player.hp - 2);
       messages.push('マキビシを踏んだ。2ダメージを受けた。');
     }
