@@ -46,6 +46,9 @@ export class WorldSystem {
   }
   interact(state) {
     if (state.battle) return { ok: false, message: '戦闘中は探索できない。' };
+    const currentCell = this.getCell(state.player.x, state.player.y, state);
+    const shopIds = { D: 'general', W: 'weapon', A: 'armor' };
+    if (shopIds[currentCell]) return { ok: true, shopId: shopIds[currentCell], message: '店を見つけた。' };
     const enemy = this.encounters.findAdjacentEnemy(state, state.player.x, state.player.y, state.areaId);
     if (enemy) return { ok: true, encounter: enemy };
     if (this.getCell(state.player.x, state.player.y, state) === 'R' && !state.relicCollected) {
