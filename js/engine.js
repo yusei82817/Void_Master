@@ -231,7 +231,7 @@ export class GameEngine {
         this.state.storyEventsCompleted?.includes('S3') &&
         !this.state.storyEventsCompleted?.includes('S4') &&
         Math.abs(this.state.player.x - this.world.getWorld(this.state).exits.B.x) +
-          Math.abs(this.state.player.y - this.world.getWorld(this.state).exits.B.y) === 3) {
+          Math.abs(this.state.player.y - this.world.getWorld(this.state).exits.B.y) <= 3) {
       storyEventToStart = 'S4';
     } else if (result.travel && previousAreaId === 'sea' && this.state.areaId === 'port' &&
         this.state.storyEventsCompleted?.includes('S4') &&
