@@ -71,9 +71,9 @@ export const AREAS = {
     exits: {
       F: { x: 3, y: 3, to: 'forest', spawn: { x: 35, y: 5 }, message: '洞窟を出て深緑の森へ戻った。' },
       M: { x: 47, y: 31, to: 'volcano', spawn: { x: 5, y: 25 }, message: '溶岩洞を抜け、火山の麓へ出た。' },
-      N: { x: 47, y: 17, to: 'riverVillage', spawn: { x: 5, y: 5 }, message: '洞窟の出口を抜けると、川のせせらぎが聞こえるのどかな村に出た。' }
+      N: { x: 36, y: 16, to: 'riverVillage', spawn: { x: 5, y: 5 }, message: '洞窟の出口を抜けると、川のせせらぎが聞こえるのどかな村に出た。' }
     },
-    layout: buildAreaMap({ exits: { F: { x: 3, y: 3 }, M: { x: 47, y: 31 }, N: { x: 47, y: 17 } }, enemies: [[8, 7, 'E'], [19, 13, 'O'], [31, 23, 'E']], walls: [
+    layout: buildAreaMap({ exits: { F: { x: 3, y: 3 }, M: { x: 47, y: 31 }, N: { x: 36, y: 16 } }, enemies: [[8, 7, 'E'], [19, 13, 'O'], [31, 23, 'E']], walls: [
       { x: 10, from: 2, to: 27, gaps: [7, 16, 24] }, { x: 21, from: 2, to: 27, gaps: [5, 14, 22] }, { y: 11, from: 3, to: 37, gaps: [8, 18, 29] }
     ] })
   },
