@@ -5,6 +5,7 @@ import { SaveSystem } from './save.js';
 import { GameUI } from './ui.js';
 import { useItem } from './inventory.js';
 import { playSE, playRandomVoice } from './audio.js';
+import { setBackgroundMusic } from './bgm.js';
 
 export class GameEngine {
   constructor(documentRef = document, systems = {}) {
@@ -37,6 +38,7 @@ export class GameEngine {
     } catch (error) {
       console.error('Story handoff restore failed:', error);
     }
+    setBackgroundMusic(this.state.areaId, this.document);
     this.document.addEventListener('keydown', this.boundKeyHandler);
     this.document.addEventListener('click', this.boundCommandHandler);
     this.render();
@@ -123,6 +125,9 @@ export class GameEngine {
     }
     if (result.travel && previousAreaId === 'port' && this.state.areaId === 'sea') {
       playSE('shipLaunch');
+    }
+    if (this.state.areaId !== previousAreaId) {
+      setBackgroundMusic(this.state.areaId, this.document);
     }
     const movedSteps = this.state.steps - previousSteps;
     if (result.travel || result.relic || (movedSteps > 0 && this.state.steps % 10 === 0) || this.state.areaId !== previousAreaId) {
