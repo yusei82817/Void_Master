@@ -3,7 +3,11 @@ import { addItem } from './inventory.js';
 export const SHOP_ITEMS = [
   { id: 'potion', name: '回復薬', price: 30, description: 'HPを14回復する。' },
   { id: 'ether', name: '霊水', price: 40, description: 'MPを5回復する。' },
-  { id: 'luckyScale', name: '激運の天秤', price: 100, description: '使用した戦闘で16%の確率でGOLD報酬が2倍になる。' }
+  { id: 'luckyScale', name: '激運の天秤', price: 100, description: '使用した戦闘で16%の確率でGOLD報酬が2倍になる。' },
+  { id: 'bronzeSword', name: '青銅の剣', price: 55, description: '攻撃力 +2。武器枠に装備する。' },
+  { id: 'ironSword', name: '鉄の剣', price: 120, description: '攻撃力 +4。武器枠に装備する。' },
+  { id: 'leatherArmor', name: '革の鎧', price: 50, description: '防御力 +2。防具枠に装備する。' },
+  { id: 'ironArmor', name: '鉄の鎧', price: 115, description: '防御力 +4。防具枠に装備する。' }
 ];
 
 export function purchaseShopItem(state, itemId) {
