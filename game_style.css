@@ -197,3 +197,13 @@
   background-position: center;
   background-repeat: no-repeat;
 }
+
+
+/* 店舗タイル */
+.map-tile.tile-shop { color: #f5f0d5; background: #8b6845; border: 1px solid #f1d39a; font-weight: 700; text-shadow: 0 1px 3px #000; }
+.map-tile.tile-shop-general { background: #8a6841; }
+.map-tile.tile-shop-weapon { background: #8d4148; border-color: #ffb7bc; }
+.map-tile.tile-shop-armor { background: #3f6b80; border-color: #b8e8ff; }
+.map-grid[data-area="river-village"] .tile-floor { background: #6b9460; }
+.map-grid[data-area="river-village"] .tile-wall { background: #3978a1; }
+.map-grid[data-area="river-village"] .tile-exit { background: #b7d8a4; }
