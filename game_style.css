@@ -199,3 +199,11 @@
 .assistant-actions .command small { white-space: nowrap; }
 
 .command[hidden] { display: none !important; }
+
+/* 汎用岩壁: 衝突判定のある障害物タイルすべてに共通適用 */
+.map-tile.tile-wall {
+  background-image: url("assets/汎用タイルマップ画像/汎用岩壁.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
