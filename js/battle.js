@@ -43,10 +43,23 @@ export class BattleSystem {
     const nextIndex = battle.stageIndex + 1;
     if (nextIndex >= GHOST_RULE_PHASES.length) return;
     const previous = battle.enemy.name;
+    const exitLines = [
+      '「くっ……次、頼んだ！」',
+      '「……まだまだ衰えてはいないと思ったが。後は頼む」',
+      '「……手間のかかる邪魔者だ。次、任せる」',
+      '「……いい男だ。守る価値がある。悔いはない」'
+    ];
+    const entranceLines = [
+      '',
+      'ラーコウ「……任せておけ」',
+      'パンデ・二イカ「……面倒だな。早く終わらせて」',
+      'サハーダ「君には無理だったか。次は俺が相手する」',
+      'シープ・シーマン「仕方ない。俺が出る」'
+    ];
     this.startGhostRule(state, nextIndex);
     state.message = {
       name: 'BATTLE',
-      text: previous + '「くっ……次、頼んだ！」 ' + state.battle.enemy.name + '「任せろ／面倒だな。早く終わらせて／俺が相手だ！」 ' + state.battle.log,
+      text: previous + exitLines[battle.stageIndex] + ' ' + entranceLines[nextIndex] + ' ' + state.battle.log,
       status: '戦闘中'
     };
   }
@@ -142,6 +155,11 @@ export class BattleSystem {
     let message = '';
     const stage = battle.stageIndex;
 
+    if (battle.enemyStunnedNext) {
+      battle.enemyStunnedNext = false;
+      return { message: enemy.name + 'は乱鋏旋風の反動で隙を見せ、行動できない。', victory: false };
+    }
+
     if (stage === 0) {
       const move = this.roll(0, 2);
       if (move === 0) {
@@ -153,6 +171,7 @@ export class BattleSystem {
           player.hp = Math.max(0, player.hp - d); total += d;
         }
         message += ' 合計' + total + 'ダメージ。';
+        return { message, victory: false };
       } else if (move === 1) {
         raw = Math.max(3, enemy.attack + 3 - player.defense);
         message = enemy.name + '「まっすぐ行くぜ！ どけー！」 甲羅突進。';
@@ -240,10 +259,6 @@ export class BattleSystem {
       if (stage === 4 && battle.attackBoostTurns > 0) damage += 2;
       player.hp = Math.max(0, player.hp - damage);
       message += ' クレインは' + damage + 'ダメージを受けた。' + (defending ? '（防御で軽減）' : '');
-    }
-    if (battle.enemyStunnedNext) {
-      battle.enemyStunnedNext = false;
-      message += ' 乱鋏旋風の反動で敵は隙を見せた。';
     }
     if (battle.attackBoostTurns > 0) battle.attackBoostTurns -= 1;
     return { message, victory: false };
