@@ -3,7 +3,7 @@ import { WorldSystem } from './world.js';
 import { BattleSystem } from './battle.js';
 import { SaveSystem } from './save.js';
 import { GameUI } from './ui.js';
-import { useItem } from './inventory.js';
+import { useItem, equipItem } from './inventory.js';
 import { playSE, playRandomVoice } from './audio.js';
 import { setBackgroundMusic } from './bgm.js';
 import { purchaseShopItem } from './shop.js';
@@ -375,6 +375,14 @@ export class GameEngine {
     }
     if (parts[0] === 'load') {
       this.performLoad(parts[1], Number(parts[2] || 1));
+      return;
+    }
+    if (parts[0] === 'equip') {
+      const result = equipItem(this.state, parts[1]);
+      this.state.message = { name: result.ok ? 'EQUIPMENT' : 'SYSTEM', text: result.message, status: this.state.battle ? '戦闘中' : '探索中' };
+      if (result.ok) this.save.saveAuto(this.state);
+      this.ui.showInventory(this.state, Boolean(this.state.battle));
+      this.render();
       return;
     }
     if (parts[0] === 'buy') {
