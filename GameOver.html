@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#030408">
+  <title>GAME OVER | Void Master</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --text: #f2f4f8;
+      --muted: #929bad;
+      --accent: #a7baff;
+      --panel: rgba(10, 13, 23, .78);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      min-width: 320px;
+      min-height: 100%;
+      margin: 0;
+      background: #030408;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      color: var(--text);
+      font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    }
+
+    .scene {
+      position: relative;
+      isolation: isolate;
+      display: grid;
+      min-height: 100vh;
+      min-height: 100dvh;
+      place-items: center;
+      overflow: hidden;
+      padding: 24px;
+      background:
+        radial-gradient(ellipse at 50% 42%, rgba(65, 28, 45, .22), transparent 42%),
+        linear-gradient(180deg, #030408 0%, #090a12 58%, #020306 100%);
+    }
+
+    .scene::before, .scene::after {
+      position: absolute;
+      z-index: -1;
+      content: "";
+      pointer-events: none;
+    }
+
+    .scene::before {
+      inset: 0;
+      opacity: .45;
+      background-image: radial-gradient(rgba(173, 186, 220, .42) .7px, transparent .7px);
+      background-size: 31px 31px;
+      mask-image: linear-gradient(transparent, black 30%, transparent 95%);
+    }
+
+    .scene::after {
+      width: min(76vw, 620px);
+      aspect-ratio: 1;
+      border: 1px solid rgba(146, 165, 220, .08);
+      border-radius: 50%;
+      box-shadow: 0 0 0 48px rgba(146, 165, 220, .025), 0 0 0 96px rgba(146, 165, 220, .018);
+    }
+
+    .panel {
+      width: min(100%, 620px);
+      padding: clamp(28px, 7vw, 64px) clamp(22px, 6vw, 58px);
+      border: 1px solid rgba(166, 181, 221, .17);
+      background: var(--panel);
+      box-shadow: 0 24px 90px rgba(0, 0, 0, .42);
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .eyebrow {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: .76rem;
+      letter-spacing: .28em;
+    }
+
+    h1 {
+      margin: 0;
+      color: #f1f2f7;
+      font-size: clamp(2.6rem, 10vw, 5.2rem);
+      font-weight: 800;
+      letter-spacing: .09em;
+      line-height: 1.08;
+      text-shadow: 0 0 32px rgba(140, 157, 205, .2);
+    }
+
+    .rule {
+      width: 68px;
+      height: 2px;
+      margin: 28px auto;
+      background: linear-gradient(90deg, transparent, #8e9fc9, transparent);
+    }
+
+    .message {
+      margin: 0;
+      color: #d5d9e4;
+      font-size: clamp(1rem, 3vw, 1.15rem);
+      line-height: 1.9;
+    }
+
+    .submessage {
+      margin: 10px 0 32px;
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.8;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 28px;
+      border: 1px solid rgba(167, 186, 255, .55);
+      background: rgba(115, 139, 205, .12);
+      color: var(--text);
+      font: inherit;
+      font-size: .95rem;
+      letter-spacing: .08em;
+      text-decoration: none;
+      transition: background .18s ease, border-color .18s ease, transform .18s ease;
+    }
+
+    .button:hover, .button:focus-visible {
+      border-color: var(--accent);
+      background: rgba(115, 139, 205, .24);
+    }
+
+    .button:active { transform: translateY(1px); }
+
+    .footer {
+      margin: 28px 0 0;
+      color: #687184;
+      font-size: .7rem;
+      letter-spacing: .2em;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .panel { animation: appear .7s ease-out both; }
+      @keyframes appear {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="scene">
+    <section class="panel" aria-labelledby="gameOverTitle">
+      <p class="eyebrow">VOID MASTER / ADVENTURE LOG</p>
+      <h1 id="gameOverTitle">GAME OVER</h1>
+      <div class="rule" aria-hidden="true"></div>
+      <p class="message">冒険は、ここで途絶えた。</p>
+      <p class="submessage">失われたものを胸に、物語の始まりへ戻ろう。</p>
+      <div class="actions">
+        <a class="button" href="index.html">タイトル画面へ戻る</a>
+      </div>
+      <p class="footer">THE JOURNEY IS NOT OVER</p>
+    </section>
+  </main>
+</body>
+</html>
