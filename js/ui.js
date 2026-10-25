@@ -1,7 +1,7 @@
 import { ITEMS, TILE_INFO } from './data.js';
 import { getItem, countItem, getEquippedItem, getEffectiveStats } from './inventory.js';
 import { CameraSystem } from './camera.js';
-import { SHOP_ITEMS } from './shop.js';
+import { getShopItems, SHOP_DETAILS } from './shop.js';
 
 export class GameUI {
   constructor(documentRef = document) {
@@ -64,7 +64,10 @@ export class GameUI {
     this.systemStatus.textContent = state.message.status || '探索中';
     this.location.textContent = worldSystem.getWorld(state).name;
     this.renderBattle(state);
-    if (this.shopCommand) this.shopCommand.disabled = state.areaId !== 'village' || Boolean(state.battle);
+    if (this.shopCommand) {
+      const cell = worldSystem.getCell(state.player.x, state.player.y, state);
+      this.shopCommand.disabled = !['D', 'W', 'A'].includes(cell) || Boolean(state.battle);
+    }
   }
 
   renderMap(state, worldSystem) {
@@ -177,14 +180,15 @@ export class GameUI {
     this.dialogBody.replaceChildren(fragment);
   }
 
-  showShop(state) {
-    this.openDialog('はじまりの村・雑貨屋', '');
+  showShop(state, shopId = 'general') {
+    const details = SHOP_DETAILS[shopId] || SHOP_DETAILS.general;
+    this.openDialog(details.title, '');
     const fragment = this.document.createDocumentFragment();
     const balance = this.document.createElement('p');
     balance.textContent = '所持GOLD：' + state.player.gold + ' G';
     fragment.appendChild(balance);
 
-    SHOP_ITEMS.forEach((item) => {
+    getShopItems(shopId).forEach((item) => {
       const row = this.document.createElement('div');
       row.className = 'inventory-row';
       const info = this.document.createElement('div');
@@ -199,7 +203,7 @@ export class GameUI {
       button.type = 'button';
       button.className = 'command';
       button.textContent = '購入';
-      button.dataset.dialogAction = 'buy:' + item.id;
+      button.dataset.dialogAction = 'buy:' + shopId + ':' + item.id;
       button.disabled = state.player.gold < item.price;
       row.appendChild(button);
       fragment.appendChild(row);
