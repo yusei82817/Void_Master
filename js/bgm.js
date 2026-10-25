@@ -1,5 +1,6 @@
 const TRACKS = {
   village: new URL('../周遊エディフィス_はじまりの村フィールドワーク用.mp3', import.meta.url).href,
+  riverVillage: new URL('../周遊エディフィス_はじまりの村フィールドワーク用.mp3', import.meta.url).href,
   forest: new URL('../contedefees_春は来る_深緑の森フィールドワーク用.mp3', import.meta.url).href,
   cave: new URL('../警告サイン_BGMer_洞窟フィールドワーク用.mp3', import.meta.url).href,
   sea: new URL('../荒波の海戦_BGMer_外洋フィールドワーク用.mp3', import.meta.url).href,
