@@ -30,6 +30,21 @@ export function useItem(state, itemId) {
   if (countItem(state, itemId) < 1) return { ok: false, message: 'そのアイテムは持っていない。' };
 
   const player = state.player;
+  if (item.effect === 'luckyScale') {
+    if (!state.battle) return { ok: false, message: '激運の天秤は戦闘中に使用する。' };
+    if (state.battle.luckyScaleUsed) return { ok: false, message: 'この戦闘ではすでに激運の天秤を使用した。' };
+    state.battle.luckyScaleUsed = true;
+    const activated = Math.random() < 0.16;
+    state.battle.goldRewardMultiplier = activated ? 2 : 1;
+    removeItem(state, itemId);
+    return {
+      ok: true,
+      message: activated
+        ? '激運の天秤が光った！ この戦闘のGOLD報酬が2倍になる。'
+        : '激運の天秤は反応しなかった。GOLD報酬は通常どおり。'
+    };
+  }
+
   if (item.effect === 'heal') {
     if (player.hp >= player.maxHp) return { ok: false, message: 'HPはすでに最大だ。' };
     const restored = Math.min(item.power, player.maxHp - player.hp);
