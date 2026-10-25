@@ -12,10 +12,25 @@
     main { width:min(860px,100%); }
     .eyebrow { color:var(--accent); font-size:.78rem; letter-spacing:.16em; }
     h1 { margin:.45rem 0 1.2rem; font-size:clamp(1.45rem,4vw,2.2rem); }
-    .scene { border:1px solid var(--line); background:linear-gradient(145deg,rgba(18,47,29,.96),rgba(7,20,13,.98)); border-radius:16px; padding:clamp(20px,5vw,42px); min-height:300px; box-shadow:0 20px 70px #0005; }
-    .chapter { color:var(--accent); font-size:.9rem; margin-bottom:1.4rem; }
+    .scene { border:0; background:transparent; border-radius:0; padding:0; min-height:300px; box-shadow:none; }
+    .scene-layout { display:flex; align-items:stretch; gap:clamp(12px,3vw,28px); min-height:300px; }
+    .portrait { display:block; width:clamp(120px,27vw,240px); max-height:460px; object-fit:contain; object-position:center bottom; align-self:flex-end; flex:0 0 auto; filter:drop-shadow(0 12px 18px #0007); }
+    .portrait[hidden] { display:none; }
+    .dialogue { flex:1; min-width:0; align-self:center; border:1px solid var(--line); background:linear-gradient(145deg,rgba(18,47,29,.97),rgba(7,20,13,.99)); border-radius:16px; padding:clamp(18px,3.5vw,32px); min-height:220px; box-shadow:0 20px 70px #0005; }
+    .scene-layout.crane-speaker { flex-direction:row; }
+    .scene-layout.other-speaker { flex-direction:row; }
+    .scene-layout.narration { justify-content:center; }
+    .scene-layout.narration .dialogue { width:100%; }
+    .chapter { color:var(--accent); font-size:.9rem; margin-bottom:1.2rem; }
     #speaker { color:var(--accent); font-weight:700; margin-bottom:.8rem; min-height:1.4em; }
     #text { font-size:clamp(1rem,2.4vw,1.12rem); line-height:2; white-space:pre-wrap; }
+    @media (max-width:560px) {
+      body { padding:12px; }
+      .scene-layout { gap:8px; min-height:250px; }
+      .portrait { width:clamp(76px,25vw,125px); max-height:330px; }
+      .dialogue { padding:15px; min-height:200px; }
+      #text { line-height:1.8; }
+    }
     .controls { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:18px; color:var(--muted); font-size:.88rem; }
     button { border:1px solid #6b965b; border-radius:9px; background:#244b2b; color:#fff; padding:12px 22px; font:inherit; font-weight:650; cursor:pointer; }
     button:hover { background:#32643a; } button:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
@@ -27,9 +42,14 @@
     <div class="eyebrow">VOID MASTER · STORY EVENT</div>
     <h1 id="title">深緑の森の邂逅</h1>
     <section class="scene" aria-live="polite" aria-atomic="true">
-      <div class="chapter" id="chapter">1. 森の入口</div>
-      <div id="speaker"></div>
-      <div id="text"></div>
+      <div class="scene-layout narration" id="sceneLayout">
+        <img class="portrait" id="portrait" alt="" hidden>
+        <div class="dialogue">
+          <div class="chapter" id="chapter">1. 森の入口</div>
+          <div id="speaker"></div>
+          <div id="text"></div>
+        </div>
+      </div>
     </section>
     <div class="controls">
       <span id="progress">1 / 1</span>
@@ -117,6 +137,17 @@
     const textEl = document.getElementById('text');
     const progressEl = document.getElementById('progress');
     const nextButton = document.getElementById('next');
+    const sceneLayout = document.getElementById('sceneLayout');
+    const portraitEl = document.getElementById('portrait');
+    const characterPortraits = {
+      'クレイン': { src: 'assets/character_assets/クレイン_再生成版-removebg.png', side: 'right' },
+      'リーナ': { src: 'assets/character_assets/リーナ_再生成版-removebg.png', side: 'left' },
+      'ガルド': { src: 'assets/character_assets/ガルド-removebg.png', side: 'left' },
+      'ロードマン': { src: 'assets/character_assets/盗賊団ロキ/盗賊_ロードマン-removebg-preview.png', side: 'left' },
+      'ローザ': { src: 'assets/character_assets/盗賊団ロキ/盗賊_ローザ-removebg-preview.png', side: 'left' },
+      'ローラ': { src: 'assets/character_assets/盗賊団ロキ/盗賊_ローラ-removebg-preview.png', side: 'left' },
+      'ギル・マッシュ': { src: 'assets/character_assets/盗賊団ロキ/盗賊_ギル_マッシュ-removebg-preview.png', side: 'left' }
+    };
     let index = 0;
 
     function finishEvent() {
@@ -144,6 +175,21 @@
       chapterEl.textContent = line.chapter;
       speakerEl.textContent = line.speaker;
       textEl.textContent = line.text;
+      const character = characterPortraits[line.speaker];
+      sceneLayout.classList.remove('crane-speaker', 'other-speaker', 'narration');
+      if (character) {
+        portraitEl.src = character.src;
+        portraitEl.alt = line.speaker;
+        portraitEl.hidden = false;
+        sceneLayout.classList.add(character.side === 'right' ? 'crane-speaker' : 'other-speaker');
+        if (character.side === 'right') sceneLayout.appendChild(portraitEl);
+        else sceneLayout.insertBefore(portraitEl, sceneLayout.firstElementChild);
+      } else {
+        portraitEl.hidden = true;
+        portraitEl.removeAttribute('src');
+        portraitEl.alt = '';
+        sceneLayout.classList.add('narration');
+      }
       progressEl.textContent = (index + 1) + ' / ' + event.lines.length;
       nextButton.textContent = index === event.lines.length - 1 ? '探索に戻る ▶' : '次へ ▶';
     }
