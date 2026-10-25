@@ -7,6 +7,17 @@ import { useItem } from './inventory.js';
 import { playSE, playRandomVoice } from './audio.js';
 import { setBackgroundMusic } from './bgm.js';
 
+const LOKI_GAUNTLET = [
+  { templateId: 'oniScout', count: 3, label: '鬼' },
+  { templateId: 'lokiLaura', count: 1, label: 'ローラ' },
+  { templateId: 'hollowBeast', count: 2, label: '虚ろな獣' },
+  { templateId: 'lokiRosa', count: 1, label: 'ローザ' },
+  { templateId: 'oniScout', count: 2, label: '鬼' },
+  { templateId: 'lokiGilMash', count: 1, label: 'ギル・マッシュ' },
+  { templateId: 'oniScout', count: 3, label: '鬼' },
+  { templateId: 'lokiRoadman', count: 1, label: 'ロードマン' }
+];
+
 export class GameEngine {
   constructor(documentRef = document, systems = {}) {
     this.document = documentRef;
@@ -38,11 +49,66 @@ export class GameEngine {
     } catch (error) {
       console.error('Story handoff restore failed:', error);
     }
+    if (this.state.storyEventsCompleted?.includes('S3')) {
+      if (!this.state.lokiGauntlet) {
+        this.state.lokiGauntlet = { active: true, completed: false, stage: 0, remaining: LOKI_GAUNTLET[0].count };
+      }
+      if (this.state.lokiGauntlet.active && !this.state.battle) {
+        this.startLokiEncounter();
+        this.save.saveAuto(this.state);
+      }
+    }
     setBackgroundMusic(this.state.areaId, this.document);
     this.document.addEventListener('keydown', this.boundKeyHandler);
     this.document.addEventListener('click', this.boundCommandHandler);
     this.render();
     return this;
+  }
+
+  startLokiEncounter() {
+    const gauntlet = this.state.lokiGauntlet;
+    if (!gauntlet?.active) return;
+    const stage = LOKI_GAUNTLET[gauntlet.stage];
+    if (!stage) {
+      gauntlet.active = false;
+      gauntlet.completed = true;
+      this.state.message = { name: 'RESULT', text: '盗賊団ロキとの連戦を制した。', status: '探索中' };
+      return;
+    }
+    this.battle.start(this.state, {
+      id: 'loki-gauntlet-' + gauntlet.stage + '-' + gauntlet.remaining + '-' + this.state.steps,
+      templateId: stage.templateId,
+      temporary: true
+    });
+  }
+
+  advanceLokiGauntlet(defeatedEnemy) {
+    const gauntlet = this.state.lokiGauntlet;
+    if (!gauntlet?.active) return;
+    const currentStage = LOKI_GAUNTLET[gauntlet.stage];
+    if (gauntlet.remaining > 1) {
+      gauntlet.remaining -= 1;
+      this.startLokiEncounter();
+      this.state.message.text = defeatedEnemy.name + 'を倒した。残り' + gauntlet.remaining + '体。' + this.state.message.text;
+      return;
+    }
+
+    gauntlet.stage += 1;
+    const nextStage = LOKI_GAUNTLET[gauntlet.stage];
+    if (!nextStage) {
+      gauntlet.active = false;
+      gauntlet.completed = true;
+      this.state.message = {
+        name: 'RESULT',
+        text: defeatedEnemy.name + 'を倒した。盗賊団ロキとの連戦を制した！',
+        status: '探索中'
+      };
+      return;
+    }
+
+    gauntlet.remaining = nextStage.count;
+    this.startLokiEncounter();
+    this.state.message.text = defeatedEnemy.name + 'を倒した。続いて' + nextStage.label + 'が現れた。' + this.state.message.text;
   }
 
   destroy() {
@@ -169,6 +235,7 @@ export class GameEngine {
 
   battleAction(actionSpec) {
     const wasInBattle = Boolean(this.state.battle);
+    const enemyAtActionStart = this.state.battle?.enemy || null;
     const [action, itemId] = actionSpec.split(':');
     const result = this.battle.act(this.state, action, itemId || null);
     if (result.ok && action === 'attack') {
@@ -196,7 +263,12 @@ export class GameEngine {
       this.state.message.text += ' 近くの安全な場所まで退避した。';
       this.state.message.status = '探索中';
     }
-    if (wasInBattle && !this.state.battle) this.save.saveAuto(this.state);
+    if (wasInBattle && enemyAtActionStart?.hp <= 0) {
+      this.advanceLokiGauntlet(enemyAtActionStart);
+      this.save.saveAuto(this.state);
+    } else if (wasInBattle && !this.state.battle) {
+      this.save.saveAuto(this.state);
+    }
     this.render();
   }
 
