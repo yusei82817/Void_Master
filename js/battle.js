@@ -142,7 +142,7 @@ export class BattleSystem {
 
     if (player.hp <= 0) {
       state.battle = null;
-      return messages.join(' ') + ' ' + enemy.name + 'の攻撃で意識を失った。HPは1に戻り、開始地点へ退避した。';
+      return messages.join(' ') + ' ' + enemy.name + 'の攻撃で倒れた。';
     }
     return messages.join(' ');
   }
