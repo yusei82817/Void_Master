@@ -31,7 +31,7 @@ function buildAreaMap({ start, exits, enemies = [], relics = [], shops = [], wal
 export const AREAS = {
   village: {
     id: 'village', name: 'はじまりの村', theme: 'village',
-    description: '旅の拠点となる小さな村。北の道は森へ、南東の道は港へ続く。',
+    description: '旅の拠点となる小さな村。雑貨屋と初級武器屋があり、北の道は森へ、南東の道は港へ続く。',
     start: { x: 3, y: 3 },
     exits: {
       F: { x: 47, y: 5, to: 'forest', spawn: { x: 35, y: 5 }, message: '村を出て、深い森へ足を踏み入れた。' },
