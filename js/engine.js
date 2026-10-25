@@ -6,6 +6,7 @@ import { GameUI } from './ui.js';
 import { useItem } from './inventory.js';
 import { playSE, playRandomVoice } from './audio.js';
 import { setBackgroundMusic } from './bgm.js';
+import { purchaseShopItem } from './shop.js';
 
 const LOKI_GAUNTLET = [
   { templateId: 'oniScout', count: 3, label: '鬼' },
@@ -175,6 +176,11 @@ export class GameEngine {
       case 'explore': this.interact(); break;
       case 'status': this.ui.showStatus(this.state); break;
       case 'items': this.ui.showInventory(this.state, Boolean(this.state.battle)); break;
+      case 'shop':
+        if (this.state.areaId !== 'village') this.setMessage('SHOP', '雑貨屋ははじまりの村にある。');
+        else if (this.state.battle) this.setMessage('SHOP', '戦闘中は買い物できない。');
+        else this.ui.showShop(this.state);
+        break;
       case 'save': this.saveGame(); break;
       case 'load': this.loadGame(); break;
       case 'settings': this.ui.showSettings(); break;
@@ -368,6 +374,18 @@ export class GameEngine {
     }
     if (parts[0] === 'load') {
       this.performLoad(parts[1], Number(parts[2] || 1));
+      return;
+    }
+    if (parts[0] === 'buy') {
+      if (this.state.areaId !== 'village' || this.state.battle) {
+        this.setMessage('SHOP', '今は買い物できない。');
+        return;
+      }
+      const result = purchaseShopItem(this.state, parts[1]);
+      this.state.message = { name: result.ok ? 'SHOP' : 'SYSTEM', text: result.message, status: '探索中' };
+      if (result.ok) this.save.saveAuto(this.state);
+      this.ui.showShop(this.state);
+      this.render();
       return;
     }
     if (action === 'reset') {
