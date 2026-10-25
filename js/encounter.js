@@ -8,6 +8,8 @@ export class EncounterSystem {
   }
 
   findEnemyAt(state, x, y, areaId = state.areaId) {
+    const area = AREAS[areaId];
+    if (area?.safe === true) return null;
     return state.enemies.find((enemy) =>
       !enemy.defeated && enemy.x === x && enemy.y === y && (!enemy.areaId || enemy.areaId === areaId)
     ) || null;
