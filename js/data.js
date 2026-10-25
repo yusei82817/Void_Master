@@ -157,7 +157,8 @@ export const ENEMIES = {
 };
 export const ITEMS = {
   potion: { id: 'potion', name: '回復薬', description: 'HPを14回復する。', type: 'consumable', effect: 'heal', power: 14 },
-  ether: { id: 'ether', name: '霊薬', description: 'MPを5回復する。', type: 'consumable', effect: 'restoreMp', power: 5 },
+  ether: { id: 'ether', name: '霊水', description: 'MPを5回復する。', type: 'consumable', effect: 'restoreMp', power: 5 },
+  luckyScale: { id: 'luckyScale', name: '激運の天秤', description: '使用した戦闘で16%の確率でGOLD報酬が2倍になる。', type: 'consumable', effect: 'luckyScale' },
   coreFragment: { id: 'coreFragment', name: '核の欠片', description: '遺跡で見つかった、不思議な力を宿す欠片。', type: 'key' }
 };
 export const TILE_INFO = {
