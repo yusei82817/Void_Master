@@ -177,9 +177,8 @@ export class GameEngine {
       case 'status': this.ui.showStatus(this.state); break;
       case 'items': this.ui.showInventory(this.state, Boolean(this.state.battle)); break;
       case 'shop':
-        if (this.state.areaId !== 'village') this.setMessage('SHOP', '雑貨屋ははじまりの村にある。');
-        else if (this.state.battle) this.setMessage('SHOP', '戦闘中は買い物できない。');
-        else this.ui.showShop(this.state);
+        if (this.state.battle) this.setMessage('SHOP', '戦闘中は買い物できない。');
+        else this.interact();
         break;
       case 'save': this.saveGame(); break;
       case 'load': this.loadGame(); break;
@@ -252,6 +251,10 @@ export class GameEngine {
 
   interact() {
     const result = this.world.interact(this.state);
+    if (result.shopId) {
+      this.ui.showShop(this.state, result.shopId);
+      return;
+    }
     if (result.encounter) this.battle.start(this.state, result.encounter);
     else this.state.message = { name: result.relic ? 'DISCOVERY' : 'EXPLORE', text: result.message, status: '探索中' };
     if (result.relic) this.save.saveAuto(this.state);
@@ -386,14 +389,18 @@ export class GameEngine {
       return;
     }
     if (parts[0] === 'buy') {
-      if (this.state.areaId !== 'village' || this.state.battle) {
-        this.setMessage('SHOP', '今は買い物できない。');
+      const shopId = parts[1] || 'general';
+      const itemId = parts[2] || parts[1];
+      const cell = this.world.getCell(this.state.player.x, this.state.player.y, this.state);
+      const expectedTile = { general: 'D', weapon: 'W', armor: 'A' }[shopId];
+      if (this.state.battle || !expectedTile || cell !== expectedTile) {
+        this.setMessage('SHOP', '店のタイルにいるときだけ購入できる。');
         return;
       }
-      const result = purchaseShopItem(this.state, parts[1]);
+      const result = purchaseShopItem(this.state, itemId, shopId);
       this.state.message = { name: result.ok ? 'SHOP' : 'SYSTEM', text: result.message, status: '探索中' };
       if (result.ok) this.save.saveAuto(this.state);
-      this.ui.showShop(this.state);
+      this.ui.showShop(this.state, shopId);
       this.render();
       return;
     }
