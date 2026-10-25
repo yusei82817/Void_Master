@@ -159,6 +159,10 @@ export const ITEMS = {
   potion: { id: 'potion', name: '回復薬', description: 'HPを14回復する。', type: 'consumable', effect: 'heal', power: 14 },
   ether: { id: 'ether', name: '霊水', description: 'MPを5回復する。', type: 'consumable', effect: 'restoreMp', power: 5 },
   luckyScale: { id: 'luckyScale', name: '激運の天秤', description: '使用した戦闘で16%の確率でGOLD報酬が2倍になる。', type: 'consumable', effect: 'luckyScale' },
+  bronzeSword: { id: 'bronzeSword', name: '青銅の剣', description: '攻撃力 +2。武器枠に装備する。', type: 'equipment', slot: 'weapon', attackBonus: 2 },
+  ironSword: { id: 'ironSword', name: '鉄の剣', description: '攻撃力 +4。武器枠に装備する。', type: 'equipment', slot: 'weapon', attackBonus: 4 },
+  leatherArmor: { id: 'leatherArmor', name: '革の鎧', description: '防御力 +2。防具枠に装備する。', type: 'equipment', slot: 'armor', defenseBonus: 2 },
+  ironArmor: { id: 'ironArmor', name: '鉄の鎧', description: '防御力 +4。防具枠に装備する。', type: 'equipment', slot: 'armor', defenseBonus: 4 },
   coreFragment: { id: 'coreFragment', name: '核の欠片', description: '遺跡で見つかった、不思議な力を宿す欠片。', type: 'key' }
 };
 export const TILE_INFO = {
