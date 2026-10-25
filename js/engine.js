@@ -389,10 +389,17 @@ export class GameEngine {
       return;
     }
     if (action === 'reset') {
+      const confirmReset = this.document.defaultView?.confirm;
+      if (!confirmReset || !confirmReset.call(
+        this.document.defaultView,
+        '現在の冒険の進行状況をリセットしますか？\n保存済みのセーブデータは削除されません。'
+      )) {
+        return;
+      }
       this.state = createInitialState();
       this.world.world = this.world.getWorld(this.state);
       this.ui.closeDialog();
-      this.setMessage('SYSTEM', '新しい冒険を始めた。');
+      this.setMessage('SYSTEM', '新しい冒険を始めた。保存済みのセーブデータは残っている。');
     }
   }
 }
