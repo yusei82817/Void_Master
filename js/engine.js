@@ -356,6 +356,7 @@ export class GameEngine {
     }
     this.state = result.state;
     this.world.world = this.world.getWorld(this.state);
+    setBackgroundMusic(this.state.areaId, this.document);
     const eventId = result.record?.extra?.eventId;
     this.state.message = {
       name: 'LOAD',
@@ -398,6 +399,7 @@ export class GameEngine {
       }
       this.state = createInitialState();
       this.world.world = this.world.getWorld(this.state);
+      setBackgroundMusic(this.state.areaId, this.document);
       this.ui.closeDialog();
       this.setMessage('SYSTEM', '新しい冒険を始めた。保存済みのセーブデータは残っている。');
     }
