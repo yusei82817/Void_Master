@@ -24,6 +24,32 @@ export function removeItem(state, itemId, quantity = 1) {
   return true;
 }
 
+export function getEquippedItem(state, slot) {
+  const itemId = state.equipment?.[slot];
+  const item = itemId ? getItem(itemId) : null;
+  return item && item.type === 'equipment' && item.slot === slot ? item : null;
+}
+
+export function getEffectiveStats(state) {
+  const weapon = getEquippedItem(state, 'weapon');
+  const armor = getEquippedItem(state, 'armor');
+  return {
+    attack: state.player.attack + (weapon?.attackBonus || 0),
+    defense: state.player.defense + (armor?.defenseBonus || 0)
+  };
+}
+
+export function equipItem(state, itemId) {
+  const item = getItem(itemId);
+  if (!item || item.type !== 'equipment' || !['weapon', 'armor'].includes(item.slot)) {
+    return { ok: false, message: 'これは装備できない。' };
+  }
+  if (countItem(state, itemId) < 1) return { ok: false, message: 'その装備を持っていない。' };
+  if (!state.equipment) state.equipment = { weapon: null, armor: null };
+  state.equipment[item.slot] = itemId;
+  return { ok: true, message: item.name + 'を装備した。' };
+}
+
 export function useItem(state, itemId) {
   const item = getItem(itemId);
   if (!item || item.type !== 'consumable') return { ok: false, message: 'このアイテムは使用できない。' };
