@@ -2,7 +2,7 @@ export const GAME_VERSION = '0.2.0';
 const MAP_WIDTH = 51;
 const MAP_HEIGHT = 37;
 
-function buildAreaMap({ start, exits, enemies = [], relics = [], walls = [], width = MAP_WIDTH, height = MAP_HEIGHT, defaultWalls: useDefaultWalls = true }) {
+function buildAreaMap({ start, exits, enemies = [], relics = [], shops = [], walls = [], width = MAP_WIDTH, height = MAP_HEIGHT, defaultWalls: useDefaultWalls = true }) {
   const grid = Array.from({ length: height }, (_, y) => Array.from({ length: width }, (_, x) =>
     x === 0 || y === 0 || x === width - 1 || y === height - 1 ? '#' : '.'));
   const defaultWalls = [
@@ -22,6 +22,7 @@ function buildAreaMap({ start, exits, enemies = [], relics = [], walls = [], wid
   });
   enemies.forEach(([x, y, symbol = 'E']) => { grid[y][x] = symbol; });
   relics.forEach(([x, y]) => { grid[y][x] = 'R'; });
+  shops.forEach(([x, y, symbol]) => { grid[y][x] = symbol; });
   Object.entries(exits).forEach(([symbol, exit]) => { grid[exit.y][exit.x] = symbol; });
   if (start) grid[start.y][start.x] = 'P';
   return grid.map((row) => row.join(''));
@@ -36,7 +37,7 @@ export const AREAS = {
       F: { x: 47, y: 5, to: 'forest', spawn: { x: 35, y: 5 }, message: '村を出て、深い森へ足を踏み入れた。' },
       H: { x: 47, y: 31, to: 'port', spawn: { x: 35, y: 25 }, message: '海風の吹く港へ到着した。' }
     },
-    layout: buildAreaMap({ start: { x: 3, y: 3 }, exits: { F: { x: 47, y: 5 }, H: { x: 47, y: 31 } }, enemies: [[9, 6, 'E']], walls: [{ x: 6, from: 3, to: 8, gaps: [5] }] })
+    layout: buildAreaMap({ start: { x: 3, y: 3 }, exits: { F: { x: 47, y: 5 }, H: { x: 47, y: 31 } }, enemies: [[9, 6, 'E']], shops: [[8, 5, 'D'], [10, 5, 'W']], walls: [{ x: 6, from: 3, to: 8, gaps: [5] }] })
   },
   forest: {
     id: 'forest', name: '深緑の森', theme: 'forest',
@@ -69,11 +70,19 @@ export const AREAS = {
     start: { x: 35, y: 5 },
     exits: {
       F: { x: 3, y: 3, to: 'forest', spawn: { x: 35, y: 5 }, message: '洞窟を出て深緑の森へ戻った。' },
-      M: { x: 47, y: 31, to: 'volcano', spawn: { x: 5, y: 25 }, message: '溶岩洞を抜け、火山の麓へ出た。' }
+      M: { x: 47, y: 31, to: 'volcano', spawn: { x: 5, y: 25 }, message: '溶岩洞を抜け、火山の麓へ出た。' },
+      N: { x: 47, y: 17, to: 'riverVillage', spawn: { x: 5, y: 5 }, message: '洞窟の出口を抜けると、川のせせらぎが聞こえるのどかな村に出た。' }
     },
-    layout: buildAreaMap({ exits: { F: { x: 3, y: 3 }, M: { x: 47, y: 31 } }, enemies: [[8, 7, 'E'], [19, 13, 'O'], [31, 23, 'E']], walls: [
+    layout: buildAreaMap({ exits: { F: { x: 3, y: 3 }, M: { x: 47, y: 31 }, N: { x: 47, y: 17 } }, enemies: [[8, 7, 'E'], [19, 13, 'O'], [31, 23, 'E']], walls: [
       { x: 10, from: 2, to: 27, gaps: [7, 16, 24] }, { x: 21, from: 2, to: 27, gaps: [5, 14, 22] }, { y: 11, from: 3, to: 37, gaps: [8, 18, 29] }
     ] })
+  },
+  riverVillage: {
+    id: 'riverVillage', name: 'のどかな川沿いの村', theme: 'river-village', safe: true, randomEncounters: false,
+    description: '穏やかな川が村のそばを流れている。旅人たちが休息を取り、武具を整える静かな集落だ。ここではモンスターとのエンカウントは発生しない。',
+    start: { x: 5, y: 5 },
+    exits: { C: { x: 3, y: 5, to: 'cave', spawn: { x: 45, y: 17 }, message: '村を離れ、忘却の洞窟へ戻った。' } },
+    layout: buildAreaMap({ width: 31, height: 21, defaultWalls: false, start: { x: 5, y: 5 }, exits: { C: { x: 3, y: 5 } }, shops: [[10, 5, 'A']], walls: [ { x: 15, from: 2, to: 18, gaps: [5, 13] }, { y: 10, from: 2, to: 28, gaps: [7, 21] }, { x: 24, from: 3, to: 18, gaps: [8, 15] } ] })
   },
   port: {
     id: 'port', name: '潮風の港', theme: 'port',
@@ -160,8 +169,10 @@ export const ITEMS = {
   ether: { id: 'ether', name: '霊水', description: 'MPを5回復する。', type: 'consumable', effect: 'restoreMp', power: 5 },
   luckyScale: { id: 'luckyScale', name: '激運の天秤', description: '使用した戦闘で16%の確率でGOLD報酬が2倍になる。', type: 'consumable', effect: 'luckyScale' },
   bronzeSword: { id: 'bronzeSword', name: '青銅の剣', description: '攻撃力 +2。武器枠に装備する。', type: 'equipment', slot: 'weapon', attackBonus: 2 },
+  roughWoodenSword: { id: 'roughWoodenSword', name: '粗削りの木刀', description: '攻撃力 +1。武器枠に装備する。', type: 'equipment', slot: 'weapon', attackBonus: 1 },
   ironSword: { id: 'ironSword', name: '鉄の剣', description: '攻撃力 +4。武器枠に装備する。', type: 'equipment', slot: 'weapon', attackBonus: 4 },
   leatherArmor: { id: 'leatherArmor', name: '革の鎧', description: '防御力 +2。防具枠に装備する。', type: 'equipment', slot: 'armor', defenseBonus: 2 },
+  voidHideLightArmor: { id: 'voidHideLightArmor', name: '虚皮の軽装', description: '防御力 +1。防具枠に装備する。', type: 'equipment', slot: 'armor', defenseBonus: 1 },
   ironArmor: { id: 'ironArmor', name: '鉄の鎧', description: '防御力 +4。防具枠に装備する。', type: 'equipment', slot: 'armor', defenseBonus: 4 },
   coreFragment: { id: 'coreFragment', name: '核の欠片', description: '遺跡で見つかった、不思議な力を宿す欠片。', type: 'key' }
 };
@@ -179,5 +190,5 @@ export const TILE_INFO = {
   H: { name: '港への道', glyph: '⚓', className: 'tile-exit' },
   B: { name: '船着き場', glyph: '⛵', className: 'tile-exit' },
   S: { name: '火山島への船着き場', glyph: '⌁', className: 'tile-exit' },
-  I: { name: '神域の入江への道', glyph: '✧', className: 'tile-exit' }
+  I: { name: '神域の入江への道', glyph: '✧', className: 'tile-exit' }, N: { name: 'のどかな川沿いの村への道', glyph: '⌄', className: 'tile-exit' }, D: { name: '雑貨屋', glyph: '店', className: 'tile-shop tile-shop-general' }, W: { name: '初級武器屋', glyph: '剣', className: 'tile-shop tile-shop-weapon' }, A: { name: '初級防具屋', glyph: '盾', className: 'tile-shop tile-shop-armor' }
 };
