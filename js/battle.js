@@ -20,6 +20,17 @@ export class BattleSystem {
     const player = state.player;
     const enemy = battle.enemy;
 
+    if (action === 'defend') {
+      battle.defending = true;
+      const enemyMessage = this.enemyTurn(state);
+      if (state.battle) battle.turn += 1;
+      return {
+        ok: true,
+        message: '身構えて防御態勢を取った。' + (enemyMessage ? ' ' + enemyMessage : ''),
+        status: state.battle ? '戦闘中' : '戦闘終了'
+      };
+    }
+
     if (action === 'flee') {
       const chance = Math.random();
       if (chance < 0.65) {
@@ -105,6 +116,8 @@ export class BattleSystem {
     const player = state.player;
     const enemy = battle.enemy;
     const messages = [];
+    const defending = Boolean(battle.defending);
+    battle.defending = false;
     const hadCaltrops = Boolean(battle.caltropsActive);
 
     if (enemy.spikeChance && Math.random() < enemy.spikeChance && !battle.caltropsActive) {
@@ -115,9 +128,10 @@ export class BattleSystem {
     } else {
       const hits = enemy.doubleAttackChance && Math.random() < enemy.doubleAttackChance ? 2 : 1;
       for (let hit = 0; hit < hits && player.hp > 0; hit += 1) {
-        const damage = Math.max(1, enemy.attack + this.roll(-1, 2) - player.defense);
+        const rawDamage = Math.max(1, enemy.attack + this.roll(-1, 2) - player.defense);
+        const damage = defending ? Math.max(1, Math.floor(rawDamage / 2)) : rawDamage;
         player.hp = Math.max(0, player.hp - damage);
-        messages.push(enemy.name + (hits === 2 ? 'の連続攻撃' : 'の反撃') + '。' + damage + 'ダメージを受けた。');
+        messages.push(enemy.name + (hits === 2 ? 'の連続攻撃' : 'の反撃') + '。' + damage + 'ダメージを受けた。' + (defending ? '（防御でダメージ半減）' : ''));
       }
     }
 
