@@ -1,6 +1,7 @@
 import { ITEMS, TILE_INFO } from './data.js';
 import { getItem, countItem } from './inventory.js';
 import { CameraSystem } from './camera.js';
+import { SHOP_ITEMS } from './shop.js';
 
 export class GameUI {
   constructor(documentRef = document) {
@@ -16,6 +17,7 @@ export class GameUI {
     this.battleEnemyHp = documentRef.getElementById('battleEnemyHp');
     this.assistantMenuButton = documentRef.getElementById('assistantMenuButton');
     this.assistantActions = documentRef.getElementById('assistantActions');
+    this.shopCommand = documentRef.getElementById('shopCommand');
     this.playerStats = {
       name: documentRef.getElementById('statName'),
       level: documentRef.getElementById('statLevel'),
@@ -61,6 +63,7 @@ export class GameUI {
     this.systemStatus.textContent = state.message.status || '探索中';
     this.location.textContent = worldSystem.getWorld(state).name;
     this.renderBattle(state);
+    if (this.shopCommand) this.shopCommand.disabled = state.areaId !== 'village' || Boolean(state.battle);
   }
 
   renderMap(state, worldSystem) {
@@ -144,7 +147,7 @@ export class GameUI {
         button.className = 'command';
         button.textContent = '使う';
         button.dataset.itemUse = item.id;
-        button.disabled = inBattle;
+        button.disabled = false;
         row.appendChild(button);
       }
       fragment.appendChild(row);
@@ -154,6 +157,36 @@ export class GameUI {
       empty.textContent = '持ち物は空だ。';
       fragment.appendChild(empty);
     }
+    this.dialogBody.replaceChildren(fragment);
+  }
+
+  showShop(state) {
+    this.openDialog('はじまりの村・雑貨屋', '');
+    const fragment = this.document.createDocumentFragment();
+    const balance = this.document.createElement('p');
+    balance.textContent = '所持GOLD：' + state.player.gold + ' G';
+    fragment.appendChild(balance);
+
+    SHOP_ITEMS.forEach((item) => {
+      const row = this.document.createElement('div');
+      row.className = 'inventory-row';
+      const info = this.document.createElement('div');
+      const name = this.document.createElement('strong');
+      name.textContent = item.name + '　' + item.price + ' G';
+      const description = this.document.createElement('p');
+      description.textContent = item.description;
+      info.append(name, description);
+      row.appendChild(info);
+
+      const button = this.document.createElement('button');
+      button.type = 'button';
+      button.className = 'command';
+      button.textContent = '購入';
+      button.dataset.dialogAction = 'buy:' + item.id;
+      button.disabled = state.player.gold < item.price;
+      row.appendChild(button);
+      fragment.appendChild(row);
+    });
     this.dialogBody.replaceChildren(fragment);
   }
 
