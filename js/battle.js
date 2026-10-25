@@ -99,7 +99,7 @@ export class BattleSystem {
           damage = Math.max(2, Math.floor(getEffectiveStats(state).attack + 6 + this.roll(0, 3) - enemy.defense));
           message = '波紋を放った。' + enemy.name + 'に' + damage + 'ダメージ。';
         } else {
-          damage = Math.max(1, player.attack + this.roll(-2, 2) - enemy.defense);
+          damage = Math.max(1, getEffectiveStats(state).attack + this.roll(-2, 2) - enemy.defense);
           if (status.speedDownTurns > 0) damage = Math.max(1, Math.floor(damage * 0.8));
           message = 'クレインの攻撃。' + enemy.name + 'に' + damage + 'ダメージ。';
         }
@@ -320,7 +320,7 @@ export class BattleSystem {
       if (enemy.normalAttackImmune) {
         message = player.name + 'の通常攻撃は' + enemy.name + 'に通用しない。';
       } else {
-        const damage = Math.max(1, player.attack + this.roll(-2, 2) - enemy.defense);
+        const damage = Math.max(1, getEffectiveStats(state).attack + this.roll(-2, 2) - enemy.defense);
         enemy.hp = Math.max(0, enemy.hp - damage);
         message = player.name + 'の攻撃。' + enemy.name + 'に' + damage + 'ダメージ。';
       }
@@ -331,7 +331,7 @@ export class BattleSystem {
         if (player.mp < 3) return { ok: false, message: 'MPが足りない。波紋にはMPが3必要だ。' };
         player.mp -= 3;
         const multiplier = enemy.kind === 'oni' ? 1.8 : 1;
-        const damage = Math.max(2, Math.floor((player.attack + 6 + this.roll(0, 3) - enemy.defense) * multiplier));
+        const damage = Math.max(2, Math.floor((getEffectiveStats(state).attack + 6 + this.roll(0, 3) - enemy.defense) * multiplier));
         enemy.hp = Math.max(0, enemy.hp - damage);
         message = '波紋を放った。' + enemy.name + 'に' + damage + 'ダメージ。';
         if (enemy.kind === 'oni') message += ' 鬼族に強く作用した！';
