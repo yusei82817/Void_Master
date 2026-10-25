@@ -225,8 +225,8 @@ export class BattleSystem {
       if (forcedFinal || (enemy.hp <= enemy.maxHp * 0.2 && !battle.finalMoveUsed)) {
         battle.finalMoveUsed = true;
         raw = Math.max(1, Math.floor(player.maxHp * 0.65));
-        message = enemy.name + '「俺が父親だ！ 俺が正しい！ 従え！」 歪んだ絆。渾身の一撃、' + raw + 'ダメージ。';
         if (defending) raw = Math.max(1, Math.floor(raw * 0.5));
+        message = enemy.name + '「俺が父親だ！ 俺が正しい！ 従え！」 歪んだ絆。渾身の一撃、' + raw + 'ダメージ。' + (defending ? '（防御で軽減）' : '');
         player.hp = Math.max(0, player.hp - raw);
         if (player.hp > 0) {
           return { message: message + ' クレインは最後の一撃を耐え抜いた。シープ・シーマンは膝をついた。「……なぜだ。力が全てじゃないのか……？」 リオーネ「父さん……」', victory: true };
