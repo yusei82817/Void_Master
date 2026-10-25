@@ -212,6 +212,16 @@ export class GameEngine {
         this.state.storyEventsCompleted?.includes('S2') &&
         !this.state.storyEventsCompleted?.includes('S3')) {
       storyEventToStart = 'S3';
+    } else if (!result.encounter && !result.travel && this.state.areaId === 'sea' &&
+        this.state.storyEventsCompleted?.includes('S3') &&
+        !this.state.storyEventsCompleted?.includes('S4') &&
+        Math.abs(this.state.player.x - this.world.getWorld(this.state).exits.B.x) +
+          Math.abs(this.state.player.y - this.world.getWorld(this.state).exits.B.y) === 3) {
+      storyEventToStart = 'S4';
+    } else if (result.travel && previousAreaId === 'sea' && this.state.areaId === 'port' &&
+        this.state.storyEventsCompleted?.includes('S4') &&
+        !this.state.storyEventsCompleted?.includes('S5')) {
+      storyEventToStart = 'S5';
     }
     if (storyEventToStart) {
       try {
