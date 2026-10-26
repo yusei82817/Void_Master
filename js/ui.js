@@ -3,6 +3,21 @@ import { getItem, countItem, getEquippedItem, getEffectiveStats } from './invent
 import { CameraSystem } from './camera.js';
 import { getShopItems, SHOP_DETAILS } from './shop.js';
 
+const FLOOR_ASSETS = Object.freeze({
+  village: './assets/tile_assets/草床.png',
+  'river-village': './assets/tile_assets/草床.png',
+  forest: './assets/tile_assets/森の草床.png',
+  sea: './assets/tile_assets/外洋の海面.png',
+  cave: './assets/tile_assets/岩床.png',
+  volcano: './assets/tile_assets/火山床.gif'
+});
+
+const SHOP_ASSETS = Object.freeze({
+  D: './ショップ管理/assets_shop/雑貨屋.png',
+  W: './ショップ管理/assets_shop/武器屋.png',
+  A: './ショップ管理/assets_shop/防具屋.png'
+});
+
 export class GameUI {
   constructor(documentRef = document) {
     this.document = documentRef;
@@ -95,15 +110,7 @@ export class GameUI {
         const tile = this.document.createElement('div');
         tile.className = 'map-tile ' + info.className + (isPlayer ? ' is-player' : '') + (enemy ? ' has-enemy' : '');
         // Terrain art is a visual layer; collision and map symbols remain data-driven.
-        const floorAssets = {
-          village: './assets/tile_assets/草床.png',
-          'river-village': './assets/tile_assets/草床.png',
-          forest: './assets/tile_assets/森の草床.png',
-          sea: './assets/tile_assets/外洋の海面.png',
-          cave: './assets/tile_assets/岩床.png',
-          volcano: './assets/tile_assets/火山床.gif'
-        };
-        const floorSrc = floorAssets[area.theme || area.id];
+        const floorSrc = FLOOR_ASSETS[area.theme || area.id];
         if (cell !== '#' && floorSrc) {
           const floor = this.document.createElement('img');
           floor.className = 'tile-art tile-floor-art';
@@ -113,15 +120,10 @@ export class GameUI {
           tile.appendChild(floor);
         }
 
-        const shopAssets = {
-          D: './ショップ管理/assets_shop/雑貨屋.png',
-          W: './ショップ管理/assets_shop/武器屋.png',
-          A: './ショップ管理/assets_shop/防具屋.png'
-        };
-        if (shopAssets[rawCell] && !enemy) {
+        if (SHOP_ASSETS[rawCell] && !enemy) {
           const shopSprite = this.document.createElement('img');
           shopSprite.className = 'tile-art tile-shop-sprite';
-          shopSprite.src = shopAssets[rawCell];
+          shopSprite.src = SHOP_ASSETS[rawCell];
           shopSprite.alt = info.name;
           shopSprite.draggable = false;
           tile.appendChild(shopSprite);
