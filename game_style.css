@@ -207,3 +207,49 @@
 .map-grid[data-area="river-village"] .tile-floor { background: #6b9460; }
 .map-grid[data-area="river-village"] .tile-wall { background: #3978a1; }
 .map-grid[data-area="river-village"] .tile-exit { background: #b7d8a4; }
+
+
+/* 32px terrain and shop artwork layers */
+.map-tile { isolation: isolate; image-rendering: pixelated; }
+.tile-art {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  pointer-events: none;
+  user-select: none;
+}
+.tile-floor-art { z-index: -1; }
+.map-tile:not(.tile-wall) { background-color: #172334; }
+.map-tile.tile-shop { border: 0; background: transparent; color: transparent; text-shadow: none; }
+.tile-shop-sprite { z-index: 1; object-fit: contain; }
+.tile-marker {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.tile-player-marker {
+  color: #e4f6ff;
+  font-size: clamp(.65rem, 2vw, 1rem);
+  text-shadow: 0 1px 3px #00101f, 0 0 5px #00101f;
+}
+.tile-exit-marker {
+  color: #f5f3d5;
+  background: #0b172c38;
+  font-size: clamp(.55rem, 1.7vw, .85rem);
+  text-shadow: 0 1px 3px #00101f;
+}
+.tile-relic-marker {
+  color: #ffe9a6;
+  font-size: clamp(.65rem, 2vw, 1rem);
+  text-shadow: 0 0 6px #fff0a0;
+}
+.map-tile.has-enemy::after { z-index: 3; }
+.map-tile.is-player { z-index: 4; }
