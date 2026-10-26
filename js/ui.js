@@ -94,8 +94,55 @@ export class GameUI {
         const info = isPlayer ? TILE_INFO.P : (TILE_INFO[cell] || TILE_INFO['.']);
         const tile = this.document.createElement('div');
         tile.className = 'map-tile ' + info.className + (isPlayer ? ' is-player' : '') + (enemy ? ' has-enemy' : '');
-        // Keep terrain tiles texture-free; entities are overlays, not tile artwork.
-        tile.textContent = isPlayer ? '♙' : (['D', 'W', 'A'].includes(cell) ? info.glyph : '');
+        // Terrain art is a visual layer; collision and map symbols remain data-driven.
+        const floorAssets = {
+          village: './assets/tile_assets/草床.png',
+          'river-village': './assets/tile_assets/草床.png',
+          forest: './assets/tile_assets/森の草床.png',
+          sea: './assets/tile_assets/外洋の海面.png',
+          cave: './assets/tile_assets/岩床.png',
+          volcano: './assets/tile_assets/火山床.gif'
+        };
+        const floorSrc = floorAssets[area.theme || area.id];
+        if (cell !== '#' && floorSrc) {
+          const floor = this.document.createElement('img');
+          floor.className = 'tile-art tile-floor-art';
+          floor.src = floorSrc;
+          floor.alt = '';
+          floor.draggable = false;
+          tile.appendChild(floor);
+        }
+
+        const shopAssets = {
+          D: './ショップ管理/assets_shop/雑貨屋.png',
+          W: './ショップ管理/assets_shop/武器屋.png',
+          A: './ショップ管理/assets_shop/防具屋.png'
+        };
+        if (shopAssets[rawCell] && !enemy) {
+          const shopSprite = this.document.createElement('img');
+          shopSprite.className = 'tile-art tile-shop-sprite';
+          shopSprite.src = shopAssets[rawCell];
+          shopSprite.alt = info.name;
+          shopSprite.draggable = false;
+          tile.appendChild(shopSprite);
+        }
+
+        if (isPlayer) {
+          const playerMark = this.document.createElement('span');
+          playerMark.className = 'tile-marker tile-player-marker';
+          playerMark.textContent = '♙';
+          tile.appendChild(playerMark);
+        } else if (['F', 'V', 'C', 'M', 'H', 'B', 'S', 'I', 'N'].includes(cell)) {
+          const exitMark = this.document.createElement('span');
+          exitMark.className = 'tile-marker tile-exit-marker';
+          exitMark.textContent = info.glyph;
+          tile.appendChild(exitMark);
+        } else if (cell === 'R' && !state.relicCollected) {
+          const relicMark = this.document.createElement('span');
+          relicMark.className = 'tile-marker tile-relic-marker';
+          relicMark.textContent = info.glyph;
+          tile.appendChild(relicMark);
+        }
         tile.setAttribute('role', 'gridcell');
         tile.setAttribute('aria-label', isPlayer ? 'プレイヤー' : info.name);
         fragment.appendChild(tile);
