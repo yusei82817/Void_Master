@@ -19,13 +19,33 @@ export function createInitialState() {
 }
 export function normalizeState(saved) {
   const fresh = createInitialState();
-  if (!saved || saved.version !== 3 || !saved.player || !Array.isArray(saved.inventory)) return fresh;
+  if (!saved || ![2, 3].includes(saved.version) || !saved.player || !Array.isArray(saved.inventory)) return fresh;
+  // Migrate the previous save schema instead of silently replacing it with a new game.
+  if (saved.version === 2) {
+    saved = {
+      ...saved,
+      version: 3,
+      equipment: saved.equipment && typeof saved.equipment === 'object' ? saved.equipment : { weapon: null, armor: null },
+      storyEventsCompleted: Array.isArray(saved.storyEventsCompleted) ? saved.storyEventsCompleted : [],
+      assistantPhase1Unlocked: Boolean(saved.assistantPhase1Unlocked),
+      steps: Number.isFinite(saved.steps) ? saved.steps : 0,
+      relicCollected: Boolean(saved.relicCollected)
+    };
+  }
   const player = { ...fresh.player, ...saved.player };
   for (const key of ['hp','maxHp','mp','maxMp','level','exp','nextExp','attack','defense','gold','x','y']) {
     if (!Number.isFinite(player[key])) player[key] = fresh.player[key];
   }
-  player.maxHp = Math.max(1, player.maxHp); player.maxMp = Math.max(0, player.maxMp);
-  player.hp = Math.max(0, Math.min(player.maxHp, player.hp)); player.mp = Math.max(0, Math.min(player.maxMp, player.mp));
+  player.level = Math.max(1, Math.floor(player.level));
+  player.exp = Math.max(0, Math.floor(player.exp));
+  player.nextExp = Math.max(1, Math.floor(player.nextExp));
+  player.attack = Math.max(0, Math.floor(player.attack));
+  player.defense = Math.max(0, Math.floor(player.defense));
+  player.gold = Math.max(0, Math.floor(player.gold));
+  player.maxHp = Math.max(1, Math.floor(player.maxHp));
+  player.maxMp = Math.max(0, Math.floor(player.maxMp));
+  player.hp = Math.max(0, Math.min(player.maxHp, Math.floor(player.hp)));
+  player.mp = Math.max(0, Math.min(player.maxMp, Math.floor(player.mp)));
   const areaId = AREAS[saved.areaId] ? saved.areaId : 'village';
   const validItems = saved.inventory.filter((entry) => entry && typeof entry.itemId === 'string' && Number.isInteger(entry.quantity) && entry.quantity > 0)
     .map((entry) => ({ itemId: entry.itemId, quantity: entry.quantity }));

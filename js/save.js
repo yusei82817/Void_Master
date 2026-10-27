@@ -67,8 +67,12 @@ export class SaveSystem {
       if (!raw && type === 'manual' && slot === 1) raw = localStorage.getItem(LEGACY_SAVE_KEY);
       if (!raw) return { ok: false, message: 'セーブデータが見つからない。' };
       const parsed = JSON.parse(raw);
-      // Accept the previous single-slot save format for existing players.
+      // Accept current records and the previous single-slot schema, but never silently load a fresh game for corrupt data.
       const savedState = parsed?.state || parsed;
+      if (!savedState || ![2, 3].includes(savedState.version) ||
+          !savedState.player || !Array.isArray(savedState.inventory)) {
+        return { ok: false, message: 'セーブデータの形式が不正か、対応していないバージョンだ。別のセーブを選んでほしい。' };
+      }
       return {
         ok: true,
         state: normalizeState(savedState),

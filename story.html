@@ -249,7 +249,10 @@
             if (eventId === 'S2') state.coreFragmentObtained = true;
             if (eventId === 'S3') state.assistantPhase1Unlocked = true;
             if (eventId === 'S4') state.rioneJoined = true;
-            sessionStorage.setItem('voidMasterStoryHandoff', JSON.stringify({ state }));
+            sessionStorage.setItem('voidMasterStoryHandoff', JSON.stringify({
+              state,
+              completedEventId: eventId
+            }));
           }
         }
       } catch (error) {

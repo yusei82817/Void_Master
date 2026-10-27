@@ -13,7 +13,6 @@ const LOKI_GAUNTLET = [
   { templateId: 'lokiLaura', count: 1, label: 'ローラ' },
   { templateId: 'hollowBeast', count: 2, label: '虚ろな獣' },
   { templateId: 'lokiRosa', count: 1, label: 'ローザ' },
-  { templateId: 'oniScout', count: 2, label: '鬼' },
   { templateId: 'lokiGilMash', count: 1, label: 'ギル・マッシュ' },
   { templateId: 'oniScout', count: 3, label: '鬼' },
   { templateId: 'lokiRoadman', count: 1, label: 'ロードマン' }
@@ -45,6 +44,12 @@ export class GameEngine {
         if (restored && restored.state) {
           this.state = normalizeState(restored.state);
           this.world.world = this.world.getWorld(this.state);
+          // A completed story event becomes a durable checkpoint when control returns to the game.
+          if (typeof restored.completedEventId === 'string' &&
+              this.state.storyEventsCompleted.includes(restored.completedEventId)) {
+            const checkpoint = this.save.saveStory(this.state, restored.completedEventId);
+            if (!checkpoint.ok) console.warn('Story checkpoint save failed:', checkpoint.message);
+          }
         }
       }
     } catch (error) {
@@ -238,8 +243,14 @@ export class GameEngine {
       storyEventToStart = 'S5';
     }
     if (storyEventToStart) {
+      // Preserve a recovery point before leaving the game document for a story event.
+      const autoSave = this.save.saveAuto(this.state);
+      if (!autoSave.ok) console.warn('Pre-story auto-save failed:', autoSave.message);
       try {
-        sessionStorage.setItem('voidMasterStoryHandoff', JSON.stringify({ state: this.state }));
+        sessionStorage.setItem('voidMasterStoryHandoff', JSON.stringify({
+          state: this.state,
+          startingEventId: storyEventToStart
+        }));
       } catch (error) {
         console.error('Story handoff save failed:', error);
       }
