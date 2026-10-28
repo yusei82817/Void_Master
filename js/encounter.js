@@ -27,7 +27,22 @@ export class EncounterSystem {
     if (cell !== '.' || state.battle || this.random() >= this.randomRate) return null;
 
     const dangerousAreas = ['cave', 'volcano', 'sea'];
-    const templateId = dangerousAreas.includes(state.areaId) && this.random() < 0.35 ? 'oniScout' : 'hollowBeast';
+    let templateId;
+    const specifiedRates = {
+      village: [{ id: 'hollowBeast', rate: 0.04 }],
+      forest: [{ id: 'hollowBeast', rate: 0.04 }, { id: 'oniScout', rate: 0.03 }, { id: 'gaki', rate: 0.20 }]
+    }[state.areaId];
+    if (specifiedRates) {
+      const multiplier = state.rottenFleshBattles > 0 ? 1.2 : 1;
+      const eligible = specifiedRates.map((entry) => ({ ...entry, rate: entry.rate * multiplier }));
+      const totalRate = eligible.reduce((sum, entry) => sum + entry.rate, 0);
+      const roll = this.random();
+      if (roll >= totalRate) return null;
+      let cursor = roll;
+      templateId = eligible.find((entry) => (cursor -= entry.rate) < 0)?.id || eligible[eligible.length - 1].id;
+    } else {
+      templateId = dangerousAreas.includes(state.areaId) && this.random() < 0.35 ? 'oniScout' : 'hollowBeast';
+    }
     return {
       id: 'random-' + state.steps + '-' + x + '-' + y,
       templateId,
