@@ -29,7 +29,7 @@ export const MONSTER_BOOK = [
   },
   {
     no: 5, id: 'lionne', name: 'リオーネ・シーマン', title: '泡沫の天使', category: '特殊エネミー',
-    areas: '外洋', hp: '未指定', attack: 68, defense: 21, speed: 54, accuracy: 21,
+    areas: '外洋', hp: 96, attack: 68, defense: 21, speed: 54, accuracy: 21,
     behavior: '復讐への執着。右手のバッカルコーンで3回噛まれると即死するという噂がある。',
     gold: 'なし', drop: 'リオーネのロケットペンダント',
     condition: 'S5後、切り札の前にシープ・シーマンを討伐する',
