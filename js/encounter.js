@@ -24,7 +24,7 @@ export class EncounterSystem {
   rollRandomEncounter(state, x, y, cell) {
     const area = AREAS[state.areaId];
     if (area?.randomEncounters === false || area?.safe === true) return null;
-    if (cell !== '.' || state.battle || this.random() >= this.randomRate) return null;
+    if (cell !== '.' || state.battle) return null;
 
     const dangerousAreas = ['cave', 'volcano', 'sea'];
     let templateId;
@@ -41,6 +41,7 @@ export class EncounterSystem {
       let cursor = roll;
       templateId = eligible.find((entry) => (cursor -= entry.rate) < 0)?.id || eligible[eligible.length - 1].id;
     } else {
+      if (this.random() >= this.randomRate) return null;
       templateId = dangerousAreas.includes(state.areaId) && this.random() < 0.35 ? 'oniScout' : 'hollowBeast';
     }
     return {
