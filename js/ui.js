@@ -1,4 +1,5 @@
 import { ITEMS, TILE_INFO } from './data.js';
+import { MONSTER_BOOK } from './monster-book.js';
 import { getItem, countItem, getEquippedItem, getEffectiveStats } from './inventory.js';
 import { CameraSystem } from './camera.js';
 import { getShopItems, SHOP_DETAILS } from './shop.js';
@@ -329,6 +330,65 @@ export class GameUI {
         addEntry('manual', slot, '任意セーブ ' + slot, '空きスロット');
       }
     }
+    this.dialogBody.replaceChildren(fragment);
+  }
+
+
+  showMonsterBook(state) {
+    this.openDialog('Monster図鑑', '仕様書に基づくモンスター一覧');
+    const fragment = this.document.createDocumentFragment();
+    const intro = this.document.createElement('p');
+    intro.className = 'monster-book-intro';
+    intro.textContent = '仕様書に記載されたNo.1〜No.16を収録。討伐数はこのセーブデータ内で記録する。HPなど、仕様書に記載のない値は推測で補完していない。';
+    fragment.appendChild(intro);
+
+    const kills = state.monsterKills && typeof state.monsterKills === 'object' ? state.monsterKills : {};
+    MONSTER_BOOK.forEach((monster) => {
+      const card = this.document.createElement('article');
+      card.className = 'monster-book-entry';
+      const heading = this.document.createElement('div');
+      heading.className = 'monster-book-heading';
+      const title = this.document.createElement('strong');
+      title.textContent = 'No.' + monster.no + '　' + monster.name;
+      const count = this.document.createElement('span');
+      count.className = 'monster-book-kills';
+      count.textContent = '討伐 ' + (Number(kills[monster.id]) || 0) + '体';
+      heading.append(title, count);
+      card.appendChild(heading);
+
+      if (monster.title) {
+        const alias = this.document.createElement('p');
+        alias.className = 'monster-book-alias';
+        alias.textContent = '二つ名：' + monster.title;
+        card.appendChild(alias);
+      }
+
+      const category = this.document.createElement('p');
+      category.textContent = '分類：' + monster.category + ' ／ 出現：' + monster.areas;
+      card.appendChild(category);
+
+      const stats = this.document.createElement('p');
+      stats.className = 'monster-book-stats';
+      stats.textContent = 'HP ' + monster.hp + '　攻撃 ' + monster.attack + '　防御 ' + monster.defense +
+        '　素早さ ' + monster.speed + '　精密度 ' + monster.accuracy;
+      card.appendChild(stats);
+
+      const fields = [
+        ['攻撃特徴', monster.behavior],
+        ['報酬', monster.gold],
+        ['ドロップ', monster.drop],
+        ['出現条件', monster.condition],
+        ['特徴', monster.description]
+      ];
+      fields.forEach(([label, value]) => {
+        const line = this.document.createElement('p');
+        const strong = this.document.createElement('strong');
+        strong.textContent = label + '：';
+        line.append(strong, this.document.createTextNode(String(value)));
+        card.appendChild(line);
+      });
+      fragment.appendChild(card);
+    });
     this.dialogBody.replaceChildren(fragment);
   }
 
