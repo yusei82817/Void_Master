@@ -253,3 +253,25 @@
 }
 .map-tile.has-enemy::after { z-index: 3; }
 .map-tile.is-player { z-index: 4; }
+
+
+/* Monster図鑑 */
+.monster-book-intro { color: var(--muted); line-height: 1.65; margin: 0 0 14px; }
+.monster-book-entry {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff04;
+  padding: 12px 14px;
+  margin: 0 0 10px;
+  line-height: 1.6;
+}
+.monster-book-heading { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.monster-book-heading strong { color: var(--accent); }
+.monster-book-kills { color: var(--gold); white-space: nowrap; font-size: .85rem; }
+.monster-book-entry p { margin: 7px 0 0; }
+.monster-book-alias { color: var(--gold); }
+.monster-book-stats { padding: 8px; background: #0003; border-radius: 5px; font-size: .9rem; }
+@media (max-width: 560px) {
+  .monster-book-heading { flex-direction: column; gap: 2px; }
+  .monster-book-stats { overflow-wrap: anywhere; }
+}
