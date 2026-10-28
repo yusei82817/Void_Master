@@ -4,7 +4,7 @@ export function createInitialState() {
   Object.values(AREAS).forEach((area) => area.layout.forEach((row, y) => [...row].forEach((cell, x) => {
     if (cell === 'E' || cell === 'O') enemies.push({
       id: 'enemy-' + area.id + '-' + x + '-' + y, areaId: area.id,
-      templateId: cell === 'O' ? 'oniScout' : 'hollowBeast', x, y, defeated: false
+      templateId: cell === 'O' ? 'oniScout' : area.id === 'cave' ? 'zombie' : 'hollowBeast', x, y, defeated: false
     });
   })));
   const area = AREAS.village;
