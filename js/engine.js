@@ -181,6 +181,7 @@ export class GameEngine {
       case 'explore': this.interact(); break;
       case 'status': this.ui.showStatus(this.state); break;
       case 'items': this.ui.showInventory(this.state, Boolean(this.state.battle)); break;
+      case 'monsters': this.ui.showMonsterBook(this.state); break;
       case 'shop':
         if (this.state.battle) this.setMessage('SHOP', '戦闘中は買い物できない。');
         else this.interact();
