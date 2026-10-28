@@ -66,5 +66,5 @@ export function normalizeState(saved) {
     ? Object.fromEntries(Object.entries(saved.monsterKills).filter(([id, count]) => typeof id === 'string' && Number.isFinite(count) && count >= 0).map(([id, count]) => [id, Math.floor(count)]))
     : {};
   return { ...fresh, ...saved, version: 3, worldId: areaId, areaId, player, inventory: validItems, equipment, enemies: validEnemies, battle: null, storyEventsCompleted, assistantPhase1Unlocked,
-    message: saved.message && typeof saved.message.text === 'string' ? saved.message : fresh.message };
+    monsterKills, message: saved.message && typeof saved.message.text === 'string' ? saved.message : fresh.message };
 }
