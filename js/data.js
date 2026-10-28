@@ -159,6 +159,8 @@ export const WORLD = AREAS.village;
 export const ENEMIES = {
   hollowBeast: { id: 'hollowBeast', name: '虚ろな獣', kind: 'beast', maxHp: 16, attack: 3, defense: 2, speed: 4, accuracy: 1, exp: 8, gold: 3, description: '輪郭が揺らぐ小さな獣。' },
   oniScout: { id: 'oniScout', name: '鬼の斥候', kind: 'oni', maxHp: 24, attack: 5, defense: 3, speed: 2, accuracy: 1, exp: 14, gold: 5, drop: { itemId: 'oldAxe', chance: 0.07 }, description: '波紋に弱い鬼族の斥候。' },
+  gaki: { id: 'gaki', name: '餓鬼', kind: 'undead', maxHp: 10, attack: 1, defense: 1, speed: 3, accuracy: 1, exp: 4, gold: 2, drop: { itemId: 'rottenFlesh', chance: 0.18 }, description: '餓鬼の腐肉がエンカウント率を高める。HPとEXPは暫定値。' },
+  zombie: { id: 'zombie', name: '虚ろな屍死人（ゾンビ）', kind: 'undead', maxHp: 20, attack: 3, defense: 2, speed: 1, accuracy: 1, exp: 8, gold: 8, description: '洞窟に潜む屍死人。HPとEXPは暫定値。' },
   lokiLaura: { id: 'lokiLaura', name: 'ローラ', kind: 'human', maxHp: 42, attack: 8, defense: 3, exp: 24, gold: 12, doubleAttackChance: 0.25, description: '時折、1ターンに2回攻撃する盗賊団ロキの一員。' },
   lokiRosa: { id: 'lokiRosa', name: 'ローザ', kind: 'human', maxHp: 38, attack: 7, defense: 3, exp: 24, gold: 12, spikeChance: 0.12, description: '稀にマキビシを投げ、踏んだ相手に継続ダメージを与える。' },
   lokiGilMash: { id: 'lokiGilMash', name: 'ギル・マッシュ', kind: 'human', maxHp: 52, attack: 9, defense: 4, rippleImmune: true, exp: 32, gold: 16, description: '波紋を無効化する盗賊団ロキの一員。' },
@@ -174,6 +176,8 @@ export const ITEMS = {
   leatherArmor: { id: 'leatherArmor', name: '革の鎧', description: '防御力 +2。防具枠に装備する。', type: 'equipment', slot: 'armor', defenseBonus: 2 },
   voidHideLightArmor: { id: 'voidHideLightArmor', name: '虚皮の軽装', description: '防御力 +1。防具枠に装備する。', type: 'equipment', slot: 'armor', defenseBonus: 1 },
   ironArmor: { id: 'ironArmor', name: '鉄の鎧', description: '防御力 +4。防具枠に装備する。', type: 'equipment', slot: 'armor', defenseBonus: 4 },
+  oldAxe: { id: 'oldAxe', name: '古びた斧', description: '鬼の斥候が使っていた古い斧。攻撃力 +3。', type: 'equipment', slot: 'weapon', attackBonus: 3 },
+  rottenFlesh: { id: 'rottenFlesh', name: '餓鬼の腐肉', description: '所持してから3回の戦闘まで、大半の敵とのエンカウント率が1.2倍になる。', type: 'key' },
   coreFragment: { id: 'coreFragment', name: '核の欠片', description: '遺跡で見つかった、不思議な力を宿す欠片。', type: 'key' }
 };
 export const TILE_INFO = {
