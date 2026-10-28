@@ -157,8 +157,8 @@ export const AREAS = {
 export const WORLD = AREAS.village;
 
 export const ENEMIES = {
-  hollowBeast: { id: 'hollowBeast', name: '虚ろな獣', kind: 'beast', maxHp: 16, attack: 4, defense: 1, exp: 8, gold: 3, description: '輪郭が揺らぐ小さな獣。' },
-  oniScout: { id: 'oniScout', name: '鬼族の斥候', kind: 'oni', maxHp: 24, attack: 6, defense: 2, exp: 14, gold: 7, description: '波紋に弱い鬼族の斥候。' },
+  hollowBeast: { id: 'hollowBeast', name: '虚ろな獣', kind: 'beast', maxHp: 16, attack: 3, defense: 2, speed: 4, accuracy: 1, exp: 8, gold: 3, description: '輪郭が揺らぐ小さな獣。' },
+  oniScout: { id: 'oniScout', name: '鬼の斥候', kind: 'oni', maxHp: 24, attack: 5, defense: 3, speed: 2, accuracy: 1, exp: 14, gold: 5, drop: { itemId: 'oldAxe', chance: 0.07 }, description: '波紋に弱い鬼族の斥候。' },
   lokiLaura: { id: 'lokiLaura', name: 'ローラ', kind: 'human', maxHp: 42, attack: 8, defense: 3, exp: 24, gold: 12, doubleAttackChance: 0.25, description: '時折、1ターンに2回攻撃する盗賊団ロキの一員。' },
   lokiRosa: { id: 'lokiRosa', name: 'ローザ', kind: 'human', maxHp: 38, attack: 7, defense: 3, exp: 24, gold: 12, spikeChance: 0.12, description: '稀にマキビシを投げ、踏んだ相手に継続ダメージを与える。' },
   lokiGilMash: { id: 'lokiGilMash', name: 'ギル・マッシュ', kind: 'human', maxHp: 52, attack: 9, defense: 4, rippleImmune: true, exp: 32, gold: 16, description: '波紋を無効化する盗賊団ロキの一員。' },
