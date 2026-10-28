@@ -13,7 +13,7 @@ export function createInitialState() {
     player: { name: '旅人', level: 1, exp: 0, nextExp: 20, hp: 32, maxHp: 32, mp: 8, maxMp: 8, attack: 7, defense: 3, gold: 0, x: area.start.x, y: area.start.y },
     inventory: [{ itemId: 'potion', quantity: 3 }, { itemId: 'ether', quantity: 1 }],
     equipment: { weapon: null, armor: null },
-    enemies, relicCollected: false, steps: 0, battle: null, storyEventsCompleted: [], assistantPhase1Unlocked: false, monsterKills: {},
+    enemies, relicCollected: false, steps: 0, battle: null, storyEventsCompleted: [], assistantPhase1Unlocked: false, monsterKills: {}, rottenFleshBattles: 0,
     message: { name: 'SYSTEM', text: 'はじまりの村から冒険を始めよう。森や港への道を探し、海へは港の船で出航する。', status: '探索中' }
   };
 }
@@ -65,6 +65,7 @@ export function normalizeState(saved) {
   const monsterKills = saved.monsterKills && typeof saved.monsterKills === 'object' && !Array.isArray(saved.monsterKills)
     ? Object.fromEntries(Object.entries(saved.monsterKills).filter(([id, count]) => typeof id === 'string' && Number.isFinite(count) && count >= 0).map(([id, count]) => [id, Math.floor(count)]))
     : {};
+  const rottenFleshBattles = Number.isFinite(saved.rottenFleshBattles) ? Math.max(0, Math.min(3, Math.floor(saved.rottenFleshBattles))) : 0;
   return { ...fresh, ...saved, version: 3, worldId: areaId, areaId, player, inventory: validItems, equipment, enemies: validEnemies, battle: null, storyEventsCompleted, assistantPhase1Unlocked,
-    monsterKills, message: saved.message && typeof saved.message.text === 'string' ? saved.message : fresh.message };
+    monsterKills, rottenFleshBattles, message: saved.message && typeof saved.message.text === 'string' ? saved.message : fresh.message };
 }
