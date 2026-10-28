@@ -347,6 +347,24 @@ export class BattleSystem {
     if (enemy.hp <= 0) {
       const record = state.enemies.find((entry) => entry.id === battle.enemyId);
       if (record) record.defeated = true;
+      state.monsterKills = state.monsterKills && typeof state.monsterKills === 'object' ? state.monsterKills : {};
+      state.monsterKills[enemy.id] = (Number(state.monsterKills[enemy.id]) || 0) + 1;
+      if (state.rottenFleshBattles > 0) {
+        state.rottenFleshBattles -= 1;
+        if (state.rottenFleshBattles <= 0) {
+          state.inventory = state.inventory.filter((entry) => entry.itemId !== 'rottenFlesh');
+          message += ' 餓鬼の腐肉の効果が切れた。';
+        }
+      }
+      if (enemy.drop && Math.random() < enemy.drop.chance) {
+        const dropped = enemy.drop.itemId;
+        const itemName = dropped === 'oldAxe' ? '古びた斧' : dropped === 'rottenFlesh' ? '餓鬼の腐肉' : dropped;
+        const existing = state.inventory.find((entry) => entry.itemId === dropped);
+        if (existing) existing.quantity += 1;
+        else state.inventory.push({ itemId: dropped, quantity: 1 });
+        if (dropped === 'rottenFlesh') state.rottenFleshBattles = 3;
+        message += ' ' + itemName + 'を入手した。';
+      }
       player.exp += enemy.exp;
       player.gold += enemy.gold * (battle.goldRewardMultiplier || 1);
       message += ' ' + enemy.name + 'を倒した。EXP +' + enemy.exp + '、G +' + (enemy.gold * (battle.goldRewardMultiplier || 1)) + '。';
