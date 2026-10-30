@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#070b16">
+<title>VOID MASTER | GATE</title>
+<style>
+:root{color-scheme:dark;--bg:#070b16;--line:#83bce64a;--text:#e9f2ff;--muted:#91a5c5;--blue:#91d8ff;--gold:#d9c38a;--danger:#ff9da9}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;color:var(--text);font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;letter-spacing:.07em;overflow-x:hidden;background:radial-gradient(ellipse at 50% 42%,#2a5b9128,transparent 34%),radial-gradient(ellipse at 50% 0%,#5377aa22,transparent 55%),linear-gradient(155deg,#101a2d,var(--bg) 65%,#03050b)}
+body:before,body:after{content:"";position:fixed;left:50%;top:50%;width:min(82vw,620px);aspect-ratio:1;border:1px solid #89cfff18;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 70px #3e93da0d,inset 0 0 70px #3e93da09}
+body:after{width:min(66vw,490px);border-style:dashed;border-color:#dac69120}
+.stars{position:fixed;inset:0;pointer-events:none;opacity:.55;background-image:radial-gradient(1px 1px at 12% 22%,#d7efff 99%,transparent),radial-gradient(1px 1px at 77% 17%,#d7efff 99%,transparent),radial-gradient(2px 2px at 86% 71%,#d7efff 99%,transparent),radial-gradient(1px 1px at 24% 82%,#d7efff 99%,transparent),radial-gradient(1px 1px at 63% 91%,#d7efff 99%,transparent)}
+.gate{position:relative;z-index:1;width:min(100%,440px)}.sigil{width:74px;height:74px;margin:0 auto 20px;display:grid;place-items:center;border:1px solid #91d8ff66;border-radius:50%;color:var(--blue);font:300 2.4rem Georgia,serif;text-shadow:0 0 18px #80cfff;box-shadow:0 0 34px #5abaff20,inset 0 0 22px #5abaff12}
+.eyebrow{text-align:center;color:var(--gold);font-size:.68rem;letter-spacing:.34em}h1{margin:9px 0 5px;text-align:center;font-size:clamp(1.5rem,6vw,2rem);font-weight:500;letter-spacing:.24em}.subtitle{margin:0 0 25px;text-align:center;color:var(--muted);font-size:.72rem;letter-spacing:.17em}
+.panel{padding:clamp(22px,6vw,32px);border:1px solid var(--line);border-radius:10px;background:linear-gradient(145deg,#17263fee,#0d1628e0);box-shadow:0 24px 80px #0008,inset 0 1px #ffffff0a;backdrop-filter:blur(12px)}
+.panel-title{margin:0 0 6px;color:var(--blue);font-size:.78rem;letter-spacing:.2em}.panel-note{margin:0 0 22px;color:var(--muted);font-size:.75rem;line-height:1.8}.field{display:block;margin:15px 0}.field span{display:block;margin-bottom:8px;color:#b8c9e2;font-size:.72rem}
+input{width:100%;min-height:46px;padding:11px 13px;border:1px solid var(--line);border-radius:5px;outline:none;color:var(--text);background:#050b16a8;font:inherit;font-size:.9rem;letter-spacing:.04em}input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #91d8ff16}input::placeholder{color:#667995}
+.primary{width:100%;min-height:48px;margin-top:10px;border:1px solid #9bdcff8a;border-radius:5px;color:#071321;background:linear-gradient(110deg,#a9e4ff,#d7e8ef 55%,#d9c38a);font:inherit;font-size:.82rem;font-weight:700;letter-spacing:.2em;cursor:pointer;box-shadow:0 5px 24px #69baff20}.primary:disabled{opacity:.55;cursor:wait}
+.switch{margin:20px 0 0;text-align:center;color:var(--muted);font-size:.75rem}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+.message{display:none;margin-top:16px;padding:11px 13px;border:1px solid var(--line);border-radius:5px;color:#c9eaff;background:#6bbcff0d;font-size:.75rem;line-height:1.75;white-space:pre-line;overflow-wrap:anywhere}.message.show{display:block}.message.error{color:var(--danger);border-color:#ff9da944;background:#ff9da90c}
+.back{display:block;margin-top:21px;text-align:center;color:var(--muted);font-size:.7rem}footer{margin-top:22px;text-align:center;color:#63748f;font-size:.62rem;letter-spacing:.2em}[hidden]{display:none!important}
+@media(prefers-reduced-motion:no-preference){.sigil{animation:pulse 5s ease-in-out infinite}@keyframes pulse{50%{box-shadow:0 0 48px #5abaff35,inset 0 0 30px #5abaff20}}}
+</style>
+</head>
+<body><div class="stars" aria-hidden="true"></div><main class="gate">
+<div class="sigil" aria-hidden="true">✧</div><div class="eyebrow">THE GATE BETWEEN WORLDS</div><h1>VOID MASTER</h1><p class="subtitle">ACCOUNT AUTHENTICATION</p>
+<section class="panel" aria-labelledby="formTitle"><p class="panel-title" id="formTitle">世界への接続</p><p class="panel-note" id="formNote">旅人の記録を登録し、この世界への門を開く。</p>
+<form id="authForm">
+<label class="field" id="usernameField"><span>プレイヤー名</span><input id="username" type="text" maxlength="24" autocomplete="nickname" placeholder="ゲーム内で使用する名前"></label>
+<label class="field"><span>メールアドレス</span><input id="email" type="email" autocomplete="email" required maxlength="254" placeholder="name@example.com"></label>
+<label class="field"><span>パスワード</span><input id="password" type="password" autocomplete="current-password" minlength="8" required placeholder="8文字以上"></label>
+<button class="primary" id="submitButton" type="submit">新規登録</button></form>
+<div class="message" id="message" role="status" aria-live="polite"></div>
+<p class="switch" id="switchText">すでに記録を持っている？ <a href="?mode=login">ログイン</a></p><a class="back" href="game.html">← ゲーム画面へ戻る</a></section>
+<footer>VOID MASTER · THE RECORDS OF EDEN</footer></main>
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+const supabase=createClient("https://cirmydnldoimshyvjkao.supabase.co","sb_publishable_enn8EFBDHBgAdJliRZ7Q9g__j-oNvuw");
+const $=s=>document.querySelector(s),form=$("#authForm"),usernameField=$("#usernameField"),usernameInput=$("#username"),emailInput=$("#email"),passwordInput=$("#password"),submitButton=$("#submitButton"),formTitle=$("#formTitle"),formNote=$("#formNote"),switchText=$("#switchText"),message=$("#message");
+let mode=new URLSearchParams(location.search).get("mode")==="login"?"login":"signup";
+function showMessage(text,isError=false){message.textContent=text;message.classList.toggle("error",isError);message.classList.add("show")}
+function setMode(next){mode=next;const signup=mode==="signup";usernameField.hidden=!signup;usernameInput.required=signup;passwordInput.autocomplete=signup?"new-password":"current-password";formTitle.textContent=signup?"世界への接続":"記録の照合";formNote.textContent=signup?"旅人の記録を登録し、この世界への門を開く。":"登録済みの記録を照合し、旅の続きを再開する。";submitButton.textContent=signup?"新規登録":"ログイン";switchText.innerHTML=signup?'すでに記録を持っている？ <a href="?mode=login">ログイン</a>':'まだ記録がない？ <a href="?mode=signup">新規登録</a>';message.classList.remove("show","error");history.replaceState(null,"","?mode="+mode)}
+function createTag(){return String(Math.floor(10000000+Math.random()*90000000))}
+async function ensurePlayerProfile(user){
+ const {data:existing,error:lookupError}=await supabase.from("player_profiles").select("user_id, username, user_tag").eq("user_id",user.id).maybeSingle();
+ if(lookupError)throw lookupError;if(existing)return existing;
+ const username=String(user.user_metadata?.username||"旅人").trim().slice(0,24)||"旅人";
+ for(let attempt=0;attempt<6;attempt++){
+  const user_tag=createTag();
+  const {data,error}=await supabase.from("player_profiles").insert({user_id:user.id,username,user_tag}).select("user_id, username, user_tag").single();
+  if(!error)return data;if(error.code!=="23505")throw error;
+ }
+ throw new Error("プレイヤータグを発行できませんでした。時間をおいて再度ログインしてください。")
+}
+async function restoreConfirmedSession(){
+ const {data:{session},error}=await supabase.auth.getSession();if(error||!session?.user)return;
+ try{const profile=await ensurePlayerProfile(session.user);showMessage("認証が完了しました。\nプレイヤー名："+profile.username+" #"+profile.user_tag+"\nゲーム画面へ移動します。");setTimeout(()=>location.replace("game.html"),1400)}
+ catch(err){showMessage("ログインはできましたが、プレイヤー記録の作成に失敗しました。"+(err.message||""),true)}
+}
+form.addEventListener("submit",async event=>{
+ event.preventDefault();message.classList.remove("show","error");submitButton.disabled=true;
+ try{
+  const email=emailInput.value.trim(),password=passwordInput.value;if(password.length<8)throw new Error("パスワードは8文字以上で入力してください。");
+  if(mode==="signup"){
+   const username=usernameInput.value.trim();if(!username)throw new Error("プレイヤー名を入力してください。");if(username.length>24)throw new Error("プレイヤー名は24文字以内にしてください。");
+   const {data,error}=await supabase.auth.signUp({email,password,options:{data:{username},emailRedirectTo:location.origin+location.pathname+"?mode=login"}});
+   if(error)throw error;
+   if(data.session?.user){const profile=await ensurePlayerProfile(data.session.user);showMessage("登録が完了しました。\nプレイヤー名："+profile.username+" #"+profile.user_tag+"\nゲーム画面へ移動します。");setTimeout(()=>location.replace("game.html"),1400)}
+   else showMessage("確認メールを送信しました。メール内のリンクから認証を完了してください。認証後、このページに戻ります。");
+  }else{
+   const {data,error}=await supabase.auth.signInWithPassword({email,password});if(error)throw error;
+   const profile=await ensurePlayerProfile(data.user);showMessage("ログインしました。\nプレイヤー名："+profile.username+" #"+profile.user_tag+"\nゲーム画面へ移動します。");setTimeout(()=>location.replace("game.html"),1100)
+  }
+ }catch(err){showMessage(err.message||"処理に失敗しました。入力内容を確認してください。",true)}
+ finally{submitButton.disabled=false}
+});
+setMode(mode);restoreConfirmedSession();
+</script></body></html>
