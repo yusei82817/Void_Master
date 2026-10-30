@@ -84,13 +84,14 @@
             <button class="command" type="button" data-command="save"><span>セーブ</span><small>SAVE ›</small></button>
             <button class="command" type="button" data-command="load"><span>ロード</span><small>LOAD ›</small></button>
             <button class="command" type="button" data-command="settings"><span>設定</span><small>OPTIONS ›</small></button>
-            <div class="account-menu">
-              <button onclick="location.href='auth.html?mode=signup'">
-                新規登録
+            <div class="account-menu" aria-label="アカウント">
+              <button class="command" type="button" onclick="location.href='auth.html?mode=signup'">
+                <span>新規登録</span>
+                <small>REGISTER ›</small>
               </button>
-
-              <button onclick="location.href='auth.html?mode=login'">
-                ログイン
+              <button class="command" type="button" onclick="location.href='auth.html?mode=login'">
+                <span>ログイン</span>
+                <small>LOGIN ›</small>
               </button>
             </div>
           </div>
